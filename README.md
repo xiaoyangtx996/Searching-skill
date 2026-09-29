@@ -25,14 +25,20 @@
 
 ### 用法 2：装进 AI 助手（推荐，能自动路由）
 
-把 `网络迷踪/` 整个目录复制到 AI 助手的技能目录：
+把 `网络迷踪/` 整个目录复制到你所用助手的技能目录（路径因产品而异）：
+
+| 运行环境 | 技能目录（示例） |
+|---|---|
+| Claude Code / Codex 兼容助手 | 复制到该产品的 agent skills 目录（各产品文档路径不同） |
+| Cursor | 项目级或用户级 skills 目录（见 Cursor 产品文档） |
+| Hermes | Windows：`%LOCALAPPDATA%\hermes\skills`；Linux/macOS：`~/.hermes/skills` |
 
 ```bash
-# 目标 = AI 助手的技能目录（Windows 一般是 %LOCALAPPDATA%\hermes\skills，Linux/macOS 是 ~/.hermes/skills）
+# 将本文件夹复制为 wlmz（目标路径见上表）
 cp -r 网络迷踪 <你的技能目录>/wlmz
 ```
 
-装好后会有 **24 个技能**：
+装好后会有 **24 个技能**（总技能 + 区域层 + 22 个元素领域）；助手通过读取同级 `SKILL.md`、agent skill 加载或 Hermes `skill_view` 按需载入：
 
 | 技能名 | 内容 |
 |---|---|
