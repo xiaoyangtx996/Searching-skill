@@ -1,0 +1,7 @@
+timestamp	commit	skill	old_score	new_score	status	dimension	note	eval_mode
+2026-09-29T16:00	67ea42b	wlmz	-	~55	baseline	-	no checkpoint/fallback/blacklist; skill_view-only	dry_run
+2026-09-29T16:00	67ea42b	wlmz-region	-	~52	baseline	-	same structural gaps	dry_run
+2026-09-29T16:05	d4267c7	wlmz+region+22domains	~55	3-0 better	keep	failure+STOP+blacklist+README runtime	paired clear; wrappers	paired
+2026-09-29T16:08	fd13440	wlmz	~89	3-0/2-0 better	keep	dim8 paths+resources	paired; absolute triage swing 85-98	paired
+2026-09-29T16:12	526addb	wlmz	97.7	100.0	keep	dim8 golden+验收门禁	dim8 calibrated 10; size trim 数据来源+元素表	dry_run
+2026-09-29T16:12	526addb	wlmz-region	97.0	98.2	keep	dim1 triggers+dim8 golden	Triggers+dim8 calibrated 10	dry_run

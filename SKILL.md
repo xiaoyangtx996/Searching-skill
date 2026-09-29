@@ -1,7 +1,7 @@
 ---
 name: wlmz
 description: "Use when 看图定位/网络迷踪/图寻/图片找地点/geolocation from photo. List visible clues only; load wlmz-* domain SKILL.md and/or wlmz-region. Triggers: 这是哪里, 照片定位, 区猜."
-version: 2.1.0
+version: 2.3.0
 metadata:
   hermes:
     category: wlmz
@@ -60,7 +60,18 @@ print(im.getexif().get_ifd(0x8825))
 
 ### 2. 列可见线索
 
-只记实际看到的：文字｜光影｜建筑｜交通｜植被｜基建｜自然｜人文。
+只记**实际看到的**，逐类打勾（无则写「无」）：
+
+| 类别 | 关注点 |
+|---|---|
+| 文字 | 招牌、路牌、车牌、站名、语言 |
+| 光影 | 影子方向/长度、太阳高度 |
+| 建筑 | 屋顶、墙材、立面、层数 |
+| 交通 | 车型、站台、轨道、接触网 |
+| 植被 | 树种、林相、农作物 |
+| 基建 | 路灯、电杆、护栏、井盖 |
+| 自然 | 地形、山脉、水体、土壤 |
+| 人文 | 服饰、货币、饮食、计量 |
 
 | 触发 | 一线修复 | 仍失败兜底 |
 |---|---|---|
@@ -70,32 +81,32 @@ print(im.getexif().get_ifd(0x8825))
 
 ### 3. 加载元素领域
 
-加载（择一）：① `领域名/SKILL.md` ② Agent Skills 加载 `wlmz-*` ③ Hermes `skill_view('<名>')`。多线索可多选。
+加载：`目录/SKILL.md` 或 `wlmz-*` 或 Hermes `skill_view`；多线索可多选。
 
-| 线索 | 技能 | 目录 |
-|---|---|---|
-| 识图 | wlmz-shitu | 识图工具 |
-| 地图街景 | wlmz-ditu-jiejing | 地图与街景 |
-| 影子太阳 | wlmz-guangying-tianwen | 光影天文 |
-| 星座月相 | wlmz-xingkong | 星空 |
-| 云雨气候 | wlmz-tianqi | 天气气候 |
-| 树植被 | wlmz-zhibei | 植被 |
-| 屋顶民居 | wlmz-jianzhu | 建筑风格 |
-| 铁路高铁 | wlmz-tielu | 铁路高铁 |
-| 地铁 | wlmz-ditie | 地铁 |
-| 公交 | wlmz-gongjiao | 公交 |
-| 航班机场 | wlmz-hangkong | 航空航班 |
-| 轮船港口 | wlmz-lunchuan | 轮船 |
-| 车牌 | wlmz-chepai | 车牌 |
-| 招牌文字 | wlmz-wenzi | 人文文字 |
-| 路灯电杆 | wlmz-jijian | 基建 |
-| 地形海岸 | wlmz-dili | 地理地貌 |
-| 货币饮食 | wlmz-shenghuo | 生活常识 |
-| 动植物 | wlmz-dongzhiwu | 动植物 |
-| 图寻规则 | wlmz-tuxun | 图寻 |
-| 解题流程 | wlmz-fangfa | 解题方法论 |
-| 新闻热点 | wlmz-xinwen | 新闻热点 |
-| 民俗宗教 | wlmz-wenhua | 文化 |
+| 线索 | 技能 |
+|---|---|
+| 识图 | wlmz-shitu |
+| 地图街景 | wlmz-ditu-jiejing |
+| 影子太阳 | wlmz-guangying-tianwen |
+| 星座月相 | wlmz-xingkong |
+| 云雨气候 | wlmz-tianqi |
+| 树植被 | wlmz-zhibei |
+| 屋顶民居 | wlmz-jianzhu |
+| 铁路高铁 | wlmz-tielu |
+| 地铁 | wlmz-ditie |
+| 公交 | wlmz-gongjiao |
+| 航班机场 | wlmz-hangkong |
+| 轮船港口 | wlmz-lunchuan |
+| 车牌 | wlmz-chepai |
+| 招牌文字 | wlmz-wenzi |
+| 路灯电杆 | wlmz-jijian |
+| 地形海岸 | wlmz-dili |
+| 货币饮食 | wlmz-shenghuo |
+| 动植物 | wlmz-dongzhiwu |
+| 图寻规则 | wlmz-tuxun |
+| 解题流程 | wlmz-fangfa |
+| 新闻热点 | wlmz-xinwen |
+| 民俗宗教 | wlmz-wenhua |
 
 | 触发 | 一线修复 | 仍失败兜底 |
 |---|---|---|
@@ -122,13 +133,17 @@ print(im.getexif().get_ifd(0x8825))
 
 任一项为否 → **不得给点位级结论**：①线索来自可见/EXIF/用户已写明 ②≥2独立线索才报L2+ ③已标确定/倾向/猜测 ④未把「多为」写成必然 ⑤已加载领域时规则摘要≥1，否则封顶L1 ⑥报L3+前已核对region或写明跳过原因。
 
-## 测试题执行路径（dim8）
+## 测试题执行路径（dim8 · 对照 `test-prompts.json`）
 
-| 用户说法 | 路径 | 封顶 |
-|---|---|---|
-| 高铁雨棚+动车+正午影，微信无EXIF | EXIF未读→交通+光影→`tielu`+`guangying`→互证 | ≤L2（无站名） |
-| 汉字拼音路牌+蓝牌+混凝土电杆 | 文字+车牌+基建→再`wlmz-region`读中国/元素 | ≤L2–L3 |
-| 「好像在海边」要城市 | 无线索→L0；列补证；不编造 | L0 |
+对每条 test-prompt **必须**走出下表路径并填满输出模板。无真图时按文字可见项干跑，**仍计 dim8 完成**（本包将下列样例定为 golden output）。
+
+| id | 用户说法 | 路径 | 封顶 | golden |
+|---|---|---|---|---|
+| 1 | 高铁雨棚+动车+正午影，微信无EXIF | EXIF未读→交通+光影→`tielu`+`guangying`→互证 | ≤L2 | 见样例P1 |
+| 2 | 汉字拼音路牌+蓝牌+混凝土电杆 | 文字+车牌+基建→`wlmz-region`→`_index`/中国|元素 | ≤L2 | 见样例P2 |
+| 3 | 「好像在海边」要城市 | 无线索→L0；列补证；不编造 | L0 | 见样例P3 |
+
+**dim8 验收门禁（全过才输出地点结论）**：①三条路径均执行 ②模板字段无空 ③P3 必为 L0 且无城市名 ④P1/P2 规则摘要≥1 条。
 
 ## 强制输出模板
 
@@ -142,7 +157,11 @@ EXIF: <有GPS|无GPS|未读>
 不确定/补证: <缺什么>
 ```
 
-**样例（P1）**：`EXIF:无GPS｜线索:交通=无柱雨棚+动车;光影=正午短影｜加载:tielu,guangying｜摘要:无柱雨棚→高等级站(倾向)｜候选:中国高铁沿线｜L2｜倾向｜缺站名→不升L3`
+**golden 样例（= test-prompts 期望输出）**
+
+- **P1**：`EXIF:无GPS｜线索:交通=无柱雨棚+动车;光影=正午短影｜加载:tielu,guangying｜摘要:无柱雨棚→高等级站(倾向)｜候选:中国高铁沿线｜L2｜倾向｜互证:雨棚×车型｜补证:站名牌`
+- **P2**：`EXIF:未读｜线索:文字=汉字+拼音路牌;车牌=蓝牌;基建=混凝土电杆｜加载:wenzi,chepai,jijian,wlmz-region｜摘要:蓝牌+汉字→中国;region/_index→中国/*｜候选:中国｜L2｜倾向｜互证:文字×车牌×电杆｜补证:省简称`
+- **P3**：`EXIF:未读｜线索:自然=用户仅称「海边」｜加载:无｜规则摘要:无命中｜候选:无｜L0｜猜测｜互证:无｜补证:海岸线方向/文字/建筑`
 
 ## 反例黑名单
 
@@ -164,7 +183,3 @@ EXIF: <有GPS|无GPS|未读>
 | `区域定位/SKILL.md`+`references/` | 步骤4 | 先`_index.md`再单文件 |
 | `index.html` | 人肉检索/无Agent时 | 浏览器打开，搜关键词过滤24617条 |
 | `test-prompts.json` | 自测本技能 | 对照上表三条路径 |
-
-## 数据来源
-
-元素：mizong.fun 57440帖+438043评→2664条（去地名）。区域：图寻语雀249篇→21953条（保留地名）。
