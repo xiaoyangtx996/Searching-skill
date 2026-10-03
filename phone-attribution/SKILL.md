@@ -287,11 +287,13 @@ wiki 条目有**两类**，识别错会白忙：
 
 | 路径 | 何时用 | 怎么用 |
 |---|---|---|
-| `api.php?action=query&list=search` | 第一步 | 搜索词用**本地号码段** |
-| `api.php?action=parse&prop=wikitext` | 第二步 | 取 `{{单位电话归类}}` |
-| `region/references/elements/电话区号.md` | 之前 | 区号 → 大区/城市 |
-| `geo-sleuth/data/cn_area_codes.json` | 之前 | 离线区号表，零请求 |
-| `geo-sleuth/scripts/clues.py` | 之前 | `lookup area-code 023` 查区号 |
+| `phone-attribution/phone.json` | 中国 11 位手机 | 号段库；`phone_lookup.py` 直接扫它 |
+| `phone-attribution/phone_lookup.py` | 上一步 | `python phone-attribution/phone_lookup.py <号>`；可选同目录 `phone_index.json` 加速 |
+| `phone-attribution/build_phone_index.py` | 想加速时 | 生成索引；无索引也能查 |
+| `https://www.chahaoba.com/api.php` | 座机 | `action=query&list=search` 用**本地号码段**；`action=parse&prop=wikitext` 取 `{{单位电话归类}}` |
+| `geo-sleuth/data/cn_area_codes.json` | 座机之前 | 离线区号→城市，零请求 |
+| `geo-sleuth/scripts/clues.py` | 同上 | `python geo-sleuth/scripts/clues.py lookup area-code 023` |
+| `region/references/elements/电话区号.md` | 区号对照 | 区号 → 大区/城市 |
 | `language-script/SKILL.md` | 交叉 | 号码位数、虚拟号段判读 |
 
 ---
