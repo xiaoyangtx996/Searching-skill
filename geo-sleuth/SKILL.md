@@ -22,32 +22,9 @@ description: 核验层（计算引擎）：把判读结论算成经得起对账�
   跑 `sun.py locate` 出全球亮带 → 交 `region` 取带内城市 → `board.py add` 进候选盘 → `board.py rank` 排序。
   **只在能算出数值时进这个闭环；算不出就老实走散文规则，不要硬凑。** 详见`docs/技能互联·产出手册.md`。
 
-> 命令里的 `${CLAUDE_SKILL_DIR}` 指本 SKILL.md 所在目录（references 里的命令也一样）。Claude Code 会自动替换；其他 agent 先 `export CLAUDE_SKILL_DIR=<本目录的绝对路径>` 再跑（shell 不跨命令保留变量时，每条命令前都带上这句），或者直接把它换成这个路径。
+> **命令约定（runtime 中立）**：先 `cd` 到本 SKILL.md 所在目录，再跑 `python scripts/<名>.py …`。没有 `python` 时用 `py`。有 `uv` 的环境可以把 `python scripts/` 换成 `uv run scripts/`，效果相同。不要写死某一台机器的盘符。
 >
-> **Hermes / Windows 注意（本机实测 2026-10）**：Hermes 不会替换 `${CLAUDE_SKILL_DIR}`，也没有 `python3`。
-> 先 `set CLAUDE_SKILL_DIR=D:\网络迷踪\wlmz\网络迷踪\geo-sleuth`（PowerShell：`$env:CLAUDE_SKILL_DIR="...\geo-sleuth"`），
-> 再把命令里的 `python3` 换成实际解释器。本机没有 `uv`（`uv --version` 未找到），实测结果：
->
-> | 脚本 | 本机能否直接跑 | 说明 |
-> |---|---|---|
-> | `sun.py`、`clues.py`、`geo.py convert` | ✅ 直接跑通 | 纯 stdlib（有几处内部 import 带兜底），用 `py` 或 `python` 即可 |
-> | `terrain.py`、`imgprep.py`、`pose.py`、`tiles.py`、`osm.py`、`geo.py` 其余子命令 | ✅ 实测跑通 | 已装 numpy 2.4.6 + pillow 12.3.0。`terrain.py elev --at 39.9042,116.4074` → `53 m`；`terrain.py view --at ... --height 100 --heading 0 --range 8000 --zoom 12 --out sky.png` → 正常出图（需联网抓高程切片） |
-> | `exif.py` | ✅ 跑通 | 已装 pillow-heif 1.8.0，JPEG 与 HEIC 都实测读过 |
-> | `ocr.py` | ✅ 跑通 | 已装 rapidocr-onnxruntime 1.4.4（Windows 走 RapidOCR）。实测读一张图 11 条文字、10.6s |
-> | `revimg.py`、`intake.py` | ✅ 跑通 | 已装 playwright 1.63.0 + chromium；本机有系统 Chrome（`C:\Program Files\Google\Chrome`），`revimg.py` 用 `channel="chrome"`。实测百度以图搜图拿到 90 张相似图 + 拼图；必应关键词搜索正常。**yandex 引擎需要 `--proxy`** |
-> | `sat_scan.py`、`match.py` | ✅ 跑通 | 已装 torch 2.14.1+cpu / transformers 5.18.0 / opencv 5.0.0。`sat_scan.py points` 实测把清华西操跑道排到第 1（0.696 vs 0.025）；`match.py index`（DINOv2-small）+ `rank --refine sift` 正常出分。**首次要下模型，torch 体积大，放后台跑** |
->
-> 已验证的命令与结果（全部真跑，非导入检查）：
-> - `py scripts/sun.py pos --at 39.9042,116.4074 --time 2023-08-15T16:20 --tz Asia/Shanghai`
->   → `{"sun_azimuth": 261.76, "sun_elevation": 31.71, "shadow_len_per_1m": 1.619, ...}`
-> - `py scripts/clues.py lookup plate 渝G` → `重庆市`
-> - `py scripts/imgprep.py edges photo.jpg --out-dir edges/` → 8 张边缘/角放大图
-> - `py scripts/terrain.py elev --at 39.9042,116.4074` → `53 m`
-> - `py scripts/sat_scan.py points --points pts.json --preset track ...` → CLIP 排序出 `sat.json` + `sat.jpg`
->
-> **两个实测踩到的坑**：
-> 1. `sat_scan.py --points` 的 JSON 是 `{name: [lat, lon]}`——**纬度在前**（`observe.md` 里那些 `(经度, 纬度)` 的写法不要照抄）。传反了不报错，只会得到 0 分空白格。
-> 2. Windows 下 `/tmp/...` 这类 POSIX 路径会被解释成 `\d\tmp\...`，直接 `FileNotFoundError`。输出路径用 `D:/tmp/...` 或相对路径；长任务先 `cd` 到 workspace 再跑（脚本输出路径按当前目录解析）。
+> **路径坑（两条就够）**：`sat_scan.py --points` 的 JSON 是 `{name: [lat, lon]}`，纬度在前，传反不报错只得 0 分；Windows 不要用 `/tmp/...`，用相对路径或 `C:/tmp/...`。
 
 工作方式分三层，先记住这个，再看流程：
 
@@ -85,8 +62,8 @@ description: 核验层（计算引擎）：把判读结论算成经得起对账�
 ### 第 1 步：一条命令做完第 0–3 步
 
 ```bash
-uv run ${CLAUDE_SKILL_DIR}/scripts/intake.py photo.jpg --out-dir intake/ [--box x0,y0,x1,y1 ...] [--proxy socks5://127.0.0.1:10808]
-uv run ${CLAUDE_SKILL_DIR}/scripts/board.py init --photo photo.jpg
+python scripts/intake.py photo.jpg --out-dir intake/ [--box x0,y0,x1,y1 ...] [--proxy socks5://127.0.0.1:10808]
+python scripts/board.py init --photo photo.jpg
 ```
 
 `intake.py` 一般 1–2 分钟，第一次运行要装依赖会更久：命令超时给够（10 分钟以上）或放后台跑。被命令超时打断时，识图子进程可能还在往 `rev/` 里写文件，但不会生成 `intake.md`，别当成已经跑完。
@@ -101,10 +78,10 @@ uv run ${CLAUDE_SKILL_DIR}/scripts/board.py init --photo photo.jpg
 ### 第 2 步：候选列全、证据打分、看下一步
 
 ```bash
-uv run ${CLAUDE_SKILL_DIR}/scripts/board.py children <上级行政区名>          # 直辖市 → 全部区县；国家 → 一级行政区（gazetteer.py 查 OSM，带 bbox）
-uv run ${CLAUDE_SKILL_DIR}/scripts/board.py evidence --clue K1 --for <候选A>:5 --for <候选B>:2 --against <候选C>:0.3 --why "…" --file <比对图>
-uv run ${CLAUDE_SKILL_DIR}/scripts/board.py rank
-uv run ${CLAUDE_SKILL_DIR}/scripts/board.py next
+python scripts/board.py children <上级行政区名>          # 直辖市 → 全部区县；国家 → 一级行政区（gazetteer.py 查 OSM，带 bbox）
+python scripts/board.py evidence --clue K1 --for <候选A>:5 --for <候选B>:2 --against <候选C>:0.3 --why "…" --file <比对图>
+python scripts/board.py rank
+python scripts/board.py next
 ```
 
 `next` 只会说两种话：
@@ -134,9 +111,9 @@ uv run ${CLAUDE_SKILL_DIR}/scripts/board.py next
 ### 第 4 步：卫星图找点——机器先排序
 
 ```bash
-uv run ${CLAUDE_SKILL_DIR}/scripts/sat_scan.py grid --bbox <scan_bbox> --zoom 17 --preset track --multi-scale --top 30 --out sat.json --sheet sat_top.jpg --heat heat.jpg
-uv run ${CLAUDE_SKILL_DIR}/scripts/poi.py "<区县> 学校" --city <地级市> --out schools.json      # 种子：--seeds schools.json 给附近格子加分
-uv run ${CLAUDE_SKILL_DIR}/scripts/sat_scan.py points --points big.json --preset factory --out r.json --sheet r.jpg   # osm.py buildings / poi.py 的候选点排序
+python scripts/sat_scan.py grid --bbox <scan_bbox> --zoom 17 --preset track --multi-scale --top 30 --out sat.json --sheet sat_top.jpg --heat heat.jpg
+python scripts/poi.py "<区县> 学校" --city <地级市> --out schools.json      # 种子：--seeds schools.json 给附近格子加分
+python scripts/sat_scan.py points --points big.json --preset factory --out r.json --sheet r.jpg   # osm.py buildings / poi.py 的候选点排序
 ```
 
 - 预设：track（操场跑道）、stadium、factory、silo、dam、bridge、quarry、solar、greenhouse、port；自定义 `--query`。实测：城区 300 多格里，OSM 标注的跑道一半以上进前 30 名；国内 OSM 空白的老城，学校操场也能排第一。**它是排序不是判定**：看前 20–30 格的缩略图，再按照片里的方位、形状核。
@@ -147,9 +124,9 @@ uv run ${CLAUDE_SKILL_DIR}/scripts/sat_scan.py points --points big.json --preset
 ### 第 5 步：确认——街景也先排序
 
 ```bash
-uv run ${CLAUDE_SKILL_DIR}/scripts/baidu_pano.py scan <lat,lon> --radius 300 --out panos.json                     # 国内；国外 gsv.py
-uv run ${CLAUDE_SKILL_DIR}/scripts/match.py rank --query photo.jpg --panos panos.json --toward <地标lat,lon> --spread 15 --refine sift --top 10 --out m.json --sheet m.jpg
-uv run ${CLAUDE_SKILL_DIR}/scripts/match.py rank --query photo.jpg --items around.index.json --render gsv --spread-headings -30,0,30 --out m.json --sheet m.jpg
+python scripts/baidu_pano.py scan <lat,lon> --radius 300 --out panos.json                     # 国内；国外 gsv.py
+python scripts/match.py rank --query photo.jpg --panos panos.json --toward <地标lat,lon> --spread 15 --refine sift --top 10 --out m.json --sheet m.jpg
+python scripts/match.py rank --query photo.jpg --items around.index.json --render gsv --spread-headings -30,0,30 --out m.json --sheet m.jpg
 ```
 
 - `match.py` 用 DINOv2 全局相似度粗排、SIFT 内点精排；实测同一地点不同年份的街景真值都进前 4。只打开前 10 名，比**不变特征**（楼的轮廓、窗位、阳台、电杆位置、路缘、山脊），不比车辆、招牌、树叶。到路 ≥2 项、到楼 ≥3 项。内点 ≥15 的一张都没有**不代表不对**：换季、老批次、照片在人行道而街景在路中间时，真值实测只有 5 个、0–8 个内点（两例），先打开前 10 张比不变特征，都不对再换 `--spread-headings` 或扩大 `--within`。全局分会被季节主导（花期批次不论在哪都排前面），和照片同季节的历史批次（`gsv.py sheet --date`）最好比。
@@ -164,9 +141,9 @@ uv run ${CLAUDE_SKILL_DIR}/scripts/match.py rank --query photo.jpg --items aroun
 - 朝向没有可量的影子时用受光面：`sun.py facing --lit left --shaded camera`。车里、船上、火车上拍的写出行进方向。
 
 ```bash
-uv run ${CLAUDE_SKILL_DIR}/scripts/board.py check                      # 出结论前：排除有文件吗、主答案有核实证据吗、哪些线索没用上
-uv run ${CLAUDE_SKILL_DIR}/scripts/board.py report --merge result.json # 主答案=第一名；备选、排除、未用线索自动写进 result.json
-uv run ${CLAUDE_SKILL_DIR}/scripts/evidence.py spec.json --out evidence.jpg
+python scripts/board.py check                      # 出结论前：排除有文件吗、主答案有核实证据吗、哪些线索没用上
+python scripts/board.py report --merge result.json # 主答案=第一名；备选、排除、未用线索自动写进 result.json
+python scripts/evidence.py spec.json --out evidence.jpg
 ```
 
 ### 🔴 CHECKPOINT · 🛑 STOP · 出货前
@@ -202,7 +179,7 @@ uv run ${CLAUDE_SKILL_DIR}/scripts/evidence.py spec.json --out evidence.jpg
 
 ## 运行环境
 
-- Python 3.10+。原文要求一律 `uv run ${CLAUDE_SKILL_DIR}/scripts/xxx.py`（脚本头写了依赖）；**本机没装 `uv`**，按开头的「Hermes / Windows」表：stdlib 脚本用 `py scripts/xxx.py` 直接跑，需 numpy 的装 `numpy pillow` 后同样直跑。references 里的 `scripts/` 都相对于本 skill 目录。`revimg.py`/`intake.py` 需要本机 Chrome；`ocr.py` 在 macOS 用 Apple Vision，Windows 用 RapidOCR。
+- Python 3.10+。原文要求一律 `python scripts/xxx.py`（脚本头写了依赖）；**本机没装 `uv`**，按开头的「Hermes / Windows」表：stdlib 脚本用 `py scripts/xxx.py` 直接跑，需 numpy 的装 `numpy pillow` 后同样直跑。references 里的 `scripts/` 都相对于本 skill 目录。`revimg.py`/`intake.py` 需要本机 Chrome；`ocr.py` 在 macOS 用 Apple Vision，Windows 用 RapidOCR。
 - 代理地址以 `GEO_PROXY` 环境变量为准（`export GEO_PROXY=socks5h://...`），文中和脚本帮助里的 `127.0.0.1:10808` 是示例端口，换成你自己的。走代理：Google 卫星图、Google 街景、Overpass、Yandex、HuggingFace。直连：百度全景、百度识图、必应国内版、高程切片。`intake.py --proxy` 写 `socks5://`（Chrome 的写法）。
 - 缓存写当前目录 `.geo-cache/`；候选盘是当前目录 `board.json`。脚本清单和数据源见 `references/data-sources.md`。
 - macOS 没有 `timeout` 命令；zsh 里 `$var` 不分词，循环用 `bash -c` 或 `${=var}`。整省 Overpass 查询可能要几分钟，放后台跑。
