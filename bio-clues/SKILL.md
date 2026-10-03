@@ -20,9 +20,15 @@ metadata:
 
 ## 使用方式
 
-1. 可见特征匹配规则左侧 2. 抄命中并标倾向 3. 交回总技能互证（本领域不报 L3+）
-无命中→换领域；条件冲突→跳过；单规则→不升格点位。
-回传行：规则摘要：<线索> → <结论>
+| 步 | 输入 | 动作 | 输出 |
+|---|---|---|---|
+| 1 | 画面里的植物/作物/家畜/动物 | 套「一、四个子类」只选一类 | 子类名 |
+| 2 | 该类可见特征 | 先过「四、可执行闸门」，不过则跳过 | 过闸 / 跳过原因 |
+| 3 | 过闸的特征 | 对照「树种与覆被」「农作物」「家畜」表，或读 `references/野生动物与家畜.md` | 规则摘要一行 |
+| 4 | 有叶片花果特写且有 key | `python geo-sleuth/scripts/plant.py identify <图>` → 拉丁名 → `species.py obs` | 学名与观测范围 |
+| 5 | 步骤 3–4 的结论 | 交回总技能互证 | 本领域不报 L3+ |
+
+无命中 → 换领域。条件冲突 → 跳过该条。只命中 1 条 → 止于倾向，不升格点位。
 
 | 触发 | 一线修复 | 仍失败兜底 |
 |---|---|---|
@@ -195,7 +201,7 @@ python geo-sleuth/scripts/species.py near 39.9042,116.4074 --radius 20
 | `geo-sleuth/scripts/species.py` | 拿到学名后 / 有候选坐标 | iNaturalist 正查分布、反查邻近物种 |
 | `references/野生动物与家畜.md` | 画面有野生动物/家畜 | 物种 → 生态区/保护区 |
 | `region/references/elements/植被.md` | 需物种级分布 | 481 条（**原作者自评"思路有较大错误，建议不要深入学习"**，只作参考） |
-| `region/references/china|世界/*.md` | 已知国家/省 | 该地的动物/保护区条目 |
+| `region/references/china|world/*.md` | 已知国家/省 | 该地的动物/保护区条目 |
 | `iplant.cn` | 已知物种名 | 中文名、图鉴、别名 |
 | Pl@ntNet / iNaturalist / 树木百科 | 网页备查 | identify.plantnet.org/zh ； inaturalist.org ； thetreeographer.com |
 
