@@ -55,6 +55,15 @@ description: 核验层（计算引擎）：把判读结论算成经得起对账�
 9. ★ **排除和确认用同一个标准**：`board.py exclude` 只接受 read/computed 级线索 + 算过的文件（`geo.py frame`、`terrain.py` 等的产出）；观察和推测只能 `evidence --against` 降权，似然比被夹在 1/3–3（推测）或 1/5–5（观察）。用"附近有 X"生成候选也是过滤，X 必须是画面里确认过的东西。校园、小区、街段这类细层候选同样要进盘：一批的用 `board.py add --from <poi.py --out / osm.py geom 的输出> --level area/road` 一次全进，不手挑；放弃一个就写 `evidence --against` 附比对图，`check` 会列出一条证据都没有的（等于没看过）；第三方数据的标签（市政清单的树种、校名精确匹配）只能降权，不能当排除理由（两例都是真值被这样手动跳过）。**排除范围必须 ≤ 证据范围**：区县/片区/路这类有延展的候选，`exclude` 要用 `--covers lat,lon[:lat,lon]` 写明证据覆盖到哪一段，覆盖不足一半会被脚本拒（在一条路的一个点上看过就整条排除，两例都栽过）。
 10. ★ **人口、名气不是证据**；扫描顺序按"份额 ÷ 页数"（`board.py next`）：小城区先扫完，大城区放最后并设页数上限。
 
+| 触发 | 一线修复 | 仍失败兜底 |
+|---|---|---|
+| 没有 `python` | 改用 `py scripts/…` | 写「解释器不可用，核验未核实」，停在 L0/L1 |
+| `sun.py locate` 缺影长比/时刻 | 不进太阳闭环，只核验已有候选 | 结论写未核实，不编亮带 |
+| `intake.py` 超时且没有 `intake.md` | 当没跑完，不读半成品 `rev/` | 改手跑 `ocr.py` / `exif.py`，或缺文件则跳到第 2 步 |
+| `match.py` 内点全 <15 | 打开前 10 张比不变特征；换 `--spread-headings` | 不排除；街景缺失则 `terrain.py view --photo` |
+| `osm.py coverage` 偏少 | 改 `sat_scan.py grid` | 结论写明 OSM 空白，不定「没有这座建筑」 |
+| 两条独立约束凑不齐 | 楼级最高「中」，不报 ≤100 m | `board.py report` 只报到已核实的最细一级 |
+
 ## 流程
 
 不必走满：第 1 步识图直接命中时，跳到第 6、7 步确认。每一步的产出都要进候选盘。
@@ -179,7 +188,7 @@ python scripts/evidence.py spec.json --out evidence.jpg
 
 ## 运行环境
 
-- Python 3.10+。原文要求一律 `python scripts/xxx.py`（脚本头写了依赖）；**本机没装 `uv`**，按开头的「Hermes / Windows」表：stdlib 脚本用 `py scripts/xxx.py` 直接跑，需 numpy 的装 `numpy pillow` 后同样直跑。references 里的 `scripts/` 都相对于本 skill 目录。`revimg.py`/`intake.py` 需要本机 Chrome；`ocr.py` 在 macOS 用 Apple Vision，Windows 用 RapidOCR。
+- Python 3.10+。一律 `python scripts/xxx.py`（相对本 skill 目录）。`revimg.py`/`intake.py` 需要本机 Chrome；`ocr.py` 在 macOS 用 Apple Vision，Windows 用 RapidOCR。缺依赖时按各脚本文件头安装。
 - 代理地址以 `GEO_PROXY` 环境变量为准（`export GEO_PROXY=socks5h://...`），文中和脚本帮助里的 `127.0.0.1:10808` 是示例端口，换成你自己的。走代理：Google 卫星图、Google 街景、Overpass、Yandex、HuggingFace。直连：百度全景、百度识图、必应国内版、高程切片。`intake.py --proxy` 写 `socks5://`（Chrome 的写法）。
 - 缓存写当前目录 `.geo-cache/`；候选盘是当前目录 `board.json`。脚本清单和数据源见 `references/data-sources.md`。
 - macOS 没有 `timeout` 命令；zsh 里 `$var` 不分词，循环用 `bash -c` 或 `${=var}`。整省 Overpass 查询可能要几分钟，放后台跑。
