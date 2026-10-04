@@ -1,4 +1,4 @@
----
+﻿---
 name: wlmz-wenhua
 description: "Use when 照片里有民俗、节庆、宗教元素时 — culture, festivals and religion.; match 线索→结论 from visible clues."
 version: 1.1.0
@@ -11,6 +11,7 @@ metadata:
 # 文化
 
 民俗节庆、宗教习俗与历史
+
 
 ## 何时加载
 
@@ -25,7 +26,7 @@ metadata:
 
 | 触发 | 一线修复 | 仍失败兜底 |
 |---|---|---|
-| 无线索命中 | 换领域或加载 `methodology` | 写明本领域无可用规则 |
+| 无线索命中 | 换领域或加载解题方法论 | 写明本领域无可用规则 |
 | 规则与季节/半球冲突 | 跳过该条 | 只输出倾向 |
 | 仅命中1条 | 结论止于倾向区域 | 请用户补图或交叉其它领域 |
 

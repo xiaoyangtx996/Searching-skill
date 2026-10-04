@@ -1,4 +1,4 @@
----
+﻿---
 name: wlmz-tuxun
 description: "Use when 需要图寻玩法规则时 — the tuxun game.; match 线索→结论 from visible clues."
 version: 1.1.0
@@ -11,6 +11,12 @@ metadata:
 # 图寻
 
 图寻规则、题库与训练方法
+
+
+> 🔁 **图寻文档实时接入（必读）**：本领域与 `region/` 的源文档在语雀持续更新
+> （https://www.yuque.com/chaofun/tuxun ，262 篇）。**每次涉及图寻规则/区域判读先拉最新**：
+> 抓取与更新协议见 `tuxun/references/语雀图寻文档·接入与更新规范.md`，脚本 `tuxun/tuxun_fetch.py`，
+> 本地目录缓存 `tuxun/.tuxun_cache/toc.json`。
 
 ## 何时加载
 
@@ -25,7 +31,7 @@ metadata:
 
 | 触发 | 一线修复 | 仍失败兜底 |
 |---|---|---|
-| 无线索命中 | 换领域或加载 `methodology` | 写明本领域无可用规则 |
+| 无线索命中 | 换领域或加载解题方法论 | 写明本领域无可用规则 |
 | 规则与季节/半球冲突 | 跳过该条 | 只输出倾向 |
 | 仅命中1条 | 结论止于倾向区域 | 请用户补图或交叉其它领域 |
 
@@ -63,6 +69,7 @@ metadata:
 
 - **GeoGuessr** — https://www.geoguessr.com/
 - **Geohints 图寻线索** — https://geohints.com/
+- 同一设计者或出题者的题目风格 → 可作为新题来源与地域偏好的先验
 
 ---
 
