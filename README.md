@@ -1,16 +1,18 @@
 <p align="center">
-  <img src="./assets/readme/hero.png" width="100%" alt="Searching-skill：网络迷踪判读规则库。发一张照片，提线索，路由领域与区域，再核验定位。约 24,725 条规则，24 个领域，161+ 区域。">
+  <img src="./assets/readme/hero.png" width="100%" alt="Searching-skill：网络迷踪判读规则库。发一张照片，提线索，路由领域与区域，再核验定位。约 26,177 条规则，24 个领域，161+ 区域。">
 </p>
 
 # Searching-skill · 网络迷踪判读规则库
 
-给 AI 助手用的**看图定位**知识库：从照片可见线索推断「这是什么」「这里是哪」，再用 `geo-sleuth` 做数值核验。
+给 AI 助手用的**看图定位**知识库：从照片可见线索推断「这是什么」「这里是哪」，再用 [`geo-sleuth`](geo-sleuth/SKILL.md) 做数值核验。
 
 | 层 | 回答 | 组织 | 规模 |
 |---|---|---|---|
-| **元素层** | 这是什么 | 24 个领域 | 2,772 条 |
-| **区域层** | 这里是哪 | 161+ 个国家/省份 | 21,953 条 |
-| **合计** |  |  | **24,725 条** |
+| **元素层** | 这是什么 | 24 个领域 | 2,807 条 |
+| **区域层** | 这里是哪 | 161+ 个国家/省份 | 23,370 条 |
+| **合计** |  |  | **26,177 条** |
+
+路由表见 [`INDEX.md`](INDEX.md)；流程与证据框架见 [`docs/`](docs/)。
 
 ---
 
@@ -35,33 +37,9 @@
 
 ---
 
-## 怎么工作
-
-<p align="center">
-  <img src="./assets/readme/workflow.svg" width="100%" alt="流程：读 EXIF → 列可见线索 → 加载领域/区域 → geo-sleuth 核验 → 输出 L0–L4">
-</p>
-
-装好后有 **总技能 + 区域层 + 元素领域 + 核验层 geo-sleuth**。助手按需读取同级 `SKILL.md`（或 Hermes `skill_view`）：
-
-| 技能名 | 内容 |
-|---|---|
-| `wlmz` | 总技能：读图 → 提线索 → 路由 |
-| `wlmz-region` | **区域定位**：按国家/省份比对 |
-| `wlmz-yun` / `wlmz-shengwu` / … | 云识读、生物线索等元素领域（见 `INDEX.md`） |
-| `geo-sleuth` | **核验层**：太阳影子、OSM、反解机位、证据图 |
-
-**直接发一张照片给助手。** 它会先查 EXIF，再提取线索，加载相关领域判读「这是什么」；需要定地点时再加载 `wlmz-region`；数值核验走 `geo-sleuth`。
-
-```bash
-# 可选：本地一键分流（EXIF → OCR → 识图 → 技能遍历）
-py geo-sleuth/scripts/triage.py 图.jpg
-```
-
----
-
 ## 怎么用
 
-把 `Searching-skill/` 整个目录复制到你所用助手的技能目录：
+把 `Searching-skill/` 整个目录复制到你所用助手的技能目录，然后**直接发一张照片**：
 
 | 运行环境 | 技能目录（示例） |
 |---|---|
@@ -72,6 +50,30 @@ py geo-sleuth/scripts/triage.py 图.jpg
 ```bash
 cp -r Searching-skill <你的技能目录>/Searching-skill
 ```
+
+装好后有 **总技能 + 区域层 + 元素领域 + 核验层**。助手按需读取同级 `SKILL.md`（或 Hermes `skill_view`）：
+
+| 技能名 | 内容 |
+|---|---|
+| [`wlmz`](SKILL.md) | 总技能：读图 → 提线索 → 路由 |
+| [`wlmz-region`](region/SKILL.md) | **区域定位**：按国家/省份比对 |
+| `wlmz-yun` / `wlmz-shengwu` / … | 云识读、生物线索等元素领域（见 [`INDEX.md`](INDEX.md)） |
+| [`geo-sleuth`](geo-sleuth/SKILL.md) | **核验层**：太阳影子、OSM、反解机位、证据图 |
+
+```bash
+# 可选：本地一键分流（EXIF → OCR → 识图 → 技能遍历）
+py geo-sleuth/scripts/triage.py 图.jpg
+```
+
+---
+
+## 怎么工作
+
+<p align="center">
+  <img src="./assets/readme/workflow.svg" width="100%" alt="流程：读 EXIF → 列可见线索 → 加载领域/区域 → geo-sleuth 核验 → 输出 L0–L4">
+</p>
+
+助手会先查 EXIF，再提取线索，按 [`INDEX.md`](INDEX.md) 加载相关领域判读「这是什么」；需要定地点时再加载 [`wlmz-region`](region/SKILL.md)；数值核验走 [`geo-sleuth`](geo-sleuth/SKILL.md)。置信度与证据写法见 [`docs/证据与置信度框架.md`](docs/证据与置信度框架.md)，技能之间如何交接见 [`docs/技能互联·产出手册.md`](docs/技能互联·产出手册.md)。
 
 ---
 
@@ -143,9 +145,9 @@ Searching-skill/
 | 分区（目录） | 文件 | 线索 |
 |---|---:|---:|
 | 世界 `world/` | 132 | 14,101 |
-| 中国 `china/` | 22 | — |
-| 元素 `elements/` | 11 | — |
-| **合计** | **165** | **21,953+** |
+| 中国 `china/` | 22 | 7,175 |
+| 元素 `elements/` | 11 | 2,094 |
+| **合计** | **165** | **23,370** |
 
 线索最多的区域：
 
@@ -156,6 +158,8 @@ Searching-skill/
 | world/尼日利亚 | 641 | world/南非 | 588 |
 | china/天津 | 579 | china/中国通用 | 552 |
 | china/中国出租车 | 535 | world/西班牙 | 502 |
+
+完整分区索引：[`region/references/_index.md`](region/references/_index.md)。
 
 ### 元素层
 
@@ -172,8 +176,10 @@ Searching-skill/
 | 建筑风格 `architecture/` | 129 | 文化 `culture/` | 19 |
 | 地铁 `metro/` | 97 | 星空 `night-sky/` | 12 |
 | 基建 `infrastructure/` | 96 | 图寻 `tuxun/` | 6 |
-| 生物线索 `bio-clues/` | — | | |
-| **合计** | **2,772** | | |
+| 生物线索 `bio-clues/` | 35 | | |
+| **合计** | **2,807** | | |
+
+> `bio-clues` 计技能正文中的 `线索 → 结论`；跨国植被细表见 [`region/references/elements/`](region/references/elements/)，已计入区域层「元素」分区。
 
 ---
 
