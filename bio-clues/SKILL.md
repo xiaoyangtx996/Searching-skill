@@ -23,19 +23,12 @@ metadata:
 | 步 | 输入 | 动作 | 输出 |
 |---|---|---|---|
 | 1 | 画面里的植物/作物/家畜/动物 | 套「一、四个子类」只选一类 | 子类名 |
-| 2 | 该类可见特征 | 先过「四、可执行闸门」，不过则跳过 | 过闸 / 跳过原因 |
+| 2 | 该类可见特征 | 先过「二、识别链路与闸门」，不过则跳过 | 过闸 / 跳过原因 |
 | 3 | 过闸的特征 | 对照「树种与覆被」「农作物」「家畜」表，或读 `references/野生动物与家畜.md` | 规则摘要一行 |
 | 4 | 有叶片花果特写且有 key | `python geo-sleuth/scripts/plant.py identify <图>` → 拉丁名 → `species.py obs` | 学名与观测范围 |
 | 5 | 步骤 3–4 的结论 | 交回总技能互证 | 本领域不报 L3+ |
 
 无命中 → 换领域。条件冲突 → 跳过该条。只命中 1 条 → 止于倾向，不升格点位。
-
-| 触发 | 一线修复 | 仍失败兜底 |
-|---|---|---|
-| 无线索命中 | 换领域或加载解题方法论 | 写明本领域无可用规则 |
-| 规则与季节/半球冲突 | 跳过该条 | 只输出倾向 |
-| 仅命中1条 | 结论止于倾向区域 | 请用户补图或交叉其它领域 |
-| 只有树形没有叶片细节 | 别喂识别引擎，用「树种 → 地域」规则 | 只报气候带 |
 
 ### 🔴 CHECKPOINT · 🛑 STOP
 
@@ -92,89 +85,46 @@ metadata:
 | **家畜与家禽** | 牦牛、水牛、骆驼、蒙古马、羊、蒙古包 | 农牧区、文化区 | 本文「家畜」 |
 | **野生动物** | 兽类、鸟类、特有种、候鸟 | 生态区、保护区、迁徙走廊 | `references/野生动物与家畜.md` |
 
-## 二、两个识别/分布数据源（互补，都要用）
-
-### `plant.py` — 照片 → 物种（Pl@ntNet，植物专用）
-
-```bash
-set PLANTNET_API_KEY=你的key      # https://my.plantnet.org 免费注册（500 次/天）
-python geo-sleuth/scripts/plant.py identify leaf.jpg
-python geo-sleuth/scripts/plant.py identify leaf.jpg flower.jpg   # 同株 1–5 张更准
-python geo-sleuth/scripts/plant.py identify leaf.jpg --organ leaf # 指定部位
-```
-
-实测：2 张图（`flower, leaf`）→ `95.7% Brassica oleracea 野甘蓝`。
-返回含 `scientific`（拉丁名）、`common_zh`、`family`/`genus`、`iucn`、`gbif_id`、`score`。
-
-### `species.py` — 物种 → 真实观测坐标（iNaturalist，**全体生物**）
-
-```bash
-python geo-sleuth/scripts/species.py obs "Fagus sylvatica"        # 正查分布
-python geo-sleuth/scripts/species.py near 39.9042,116.4074 --radius 20   # 反查附近物种
-python geo-sleuth/scripts/species.py taxon "Ginkgo"                # 拿 taxon_id
-```
-
-**反查是定位上最硬的用法**——拿候选地坐标看那里实际有哪些物种记录，**证伪候选地**：
+## 二、识别链路与闸门
 
 ```
-30.9135,102.9887 (四川) 50km → 3335 种  绿绒蒿 / 喜山兀鹫 / 黄嘴山鸦…
-39.9042,116.4074 (北京) 50km → 9505 种  绿头鸭 / 鸳鸯 / 异色瓢虫…
+照片 → plant.py（拉丁名）→ species.py obs → 规则表/region → 候选
+         → species.py near（证伪）
 ```
 
-**两个候选地的物种区系明显不同** → 只要从照片认出 1–2 个物种，就能判断哪个候选地对得上。
+**只吃拉丁名/英文名**（中文「大熊猫」会撞到澳洲蜗牛）。顺序：`plant.py` → `species.py obs`。
 
-### ⚠️ iNaturalist 中文名的坑（实测）
+| 触发 | 一线修复 | 仍失败兜底 |
+|---|---|---|
+| 无线索命中 | 换领域 | 写「本领域无可用规则」 |
+| 与季节/半球冲突 | 跳过该条 | 只输出倾向 |
+| 仅命中1条 | 止于倾向 | 请用户补图或交叉 |
+| 无叶片特写 | 不跑 plant.py | 只报气候带 |
+| 缺 `PLANTNET_API_KEY` | 动作写「缺 key，改用规则表」 | 不编识别结果 |
 
-搜「大熊猫」→ 实际命中 `Hedleyella falconeri`（**Giant Panda Snail，澳洲蜗牛**），
-返回澳洲坐标。因为它的**英文俗名**里带 "Giant Panda"。
-
-**所以默认只吃拉丁学名或英文名**，中文名会被脚本直接拦下。
-正确顺序：**`plant.py` 拿学名 → `species.py obs <学名>`**。
-脚本还会在命中多个分类单元时警告（如大熊猫有四川亚种 + 秦岭亚种）。
-
-## 三、完整链路
-
-```
-照片 → plant.py（植物定物种）/ 现有规则（动物定类群）
-         ↓  学名
-       species.py obs（查真实观测坐标）
-         ↓  分布范围
-       与本领域规则 + region/ 交叉 → 候选区域
-         ↓  候选有了
-       species.py near（反查该地物种）→ 证伪不符的候选
-```
-
-## 四、可执行闸门（抄规则前必过）
-
-输出只允许三行，缺一行视为没执行本技能：
+输出三行（缺一行=未执行）：
 
 ```
 规则摘要：<可见线索> → <结论>
-动作：<跑哪条命令 / 不跑识别 / 交回总技能>
+动作：<命令 / 不跑识别 / 交回总技能>
 档位：倾向 | 跳过 | 本领域无可用规则
 ```
 
 | 画面条件 | 立刻执行 | 禁止 |
 |---|---|---|
-| 用户没给拍摄月份（含「冬天」这种季节词但无年月） | 跳过全部物候条：落叶期、展叶、花期、生育期、候鸟迁徙、「冬季光秃定纬度」 | 不写省/城；季节词只当外貌描述，不当物候证据 |
-| 只有树形/行道树轮廓，无叶片花果特写 | 不跑 `plant.py`；只用下表「不依赖叶片」的气候带条 | 不喂任何识别引擎 |
-| 公园、花坛、行道、校园单株 | 结论止于「栽培/绿化，非自然分布」 | 不定国家、不定省 |
-| 要查 iNaturalist / `species.py` | 学名必须是拉丁名或英文名 | 禁止把中文名当查询词 |
-| 命中家畜（牦牛/水牛/骆驼/蒙古马/蒙古包） | 只抄「家畜表」，止于农牧文化区 | 不定县、不定点 |
-| 主线索是护栏、路灯、天桥、欧式校园、品牌网点、站房 | 本领域不抄该条，交对应技能 | 不把构筑物当生物结论 |
-
-命令（有特写才跑；Windows 用 `python`，没有 `py` 就用 `python`）：
+| 无拍摄年月（「冬天」不算年月） | 跳过全部物候条 | 不写省/城 |
+| 无叶片花果特写 | 不跑 `plant.py`；只用覆被表 | 喂识别引擎 |
+| 公园/行道/校园单株 | 止于栽培/绿化 | 定国家/省 |
+| 查 `species.py` | 拉丁名或英文名 | 中文名当查询词 |
+| 牦牛/水牛/骆驼/蒙古马/蒙古包 | 抄家畜表 | 定县/点 |
+| 护栏/路灯/天桥/站房 | 交对应技能 | 当生物结论 |
 
 ```bash
+set PLANTNET_API_KEY=你的key
 python geo-sleuth/scripts/plant.py identify leaf.jpg
 python geo-sleuth/scripts/species.py obs "Fagus sylvatica"
-python geo-sleuth/scripts/species.py taxon "Ginkgo"
 python geo-sleuth/scripts/species.py near 39.9042,116.4074 --radius 20
 ```
-
-`plant.py` 需要环境变量 `PLANTNET_API_KEY`。没 key → 动作写「缺 key，改用规则表」，不编识别结果。
-
----
 
 ## 树种与覆被（只抄生物条）
 
