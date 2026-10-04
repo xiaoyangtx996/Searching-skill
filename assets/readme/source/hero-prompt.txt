@@ -1,0 +1,9 @@
+Asset type: transparent cutout subject for a GitHub README hero
+Composition/framing: half-body, three-quarter view facing left into title negative space; holding a printed coastal landscape photo at chest height
+Color palette: charcoal jacket, teal shirt accents, amber map-pin badge; no key color in subject
+Constraints: one isolated subject; generous padding; no text; no letters; no logo; no watermark; no UI chrome
+Background: perfectly flat solid #FF00FF magenta with no gradient, texture, floor, reflection, or shadow
+Photo print content: coastal town / blue sea / pale cliffs (avoid green-dominant vegetation so magenta-key survives)
+Communication job: show a field investigator reading a photo for geolocation clues — project-native to Searching-skill / 网络迷踪
+Style: realistic semi-illustrated editorial character, crisp edges for chroma-key
+ImageGen mode: Cursor GenerateImage + numpy magenta chroma-key

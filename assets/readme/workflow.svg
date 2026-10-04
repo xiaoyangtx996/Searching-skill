@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="220" viewBox="0 0 1200 220" role="img" aria-labelledby="title desc">
+  <title id="title">Searching-skill 工作流程</title>
+  <desc id="desc">照片 → 线索 → 元素/区域路由 → geo-sleuth 核验 → L0–L4 结论</desc>
+  <rect width="1200" height="220" rx="24" fill="#0B1424"/>
+  <g font-family="-apple-system, BlinkMacSystemFont, Segoe UI, PingFang SC, Microsoft YaHei, sans-serif">
+    <text x="48" y="42" font-size="18" fill="#8B95A8" letter-spacing="2">WORKFLOW</text>
+    <text x="48" y="72" font-size="26" font-weight="700" fill="#F4F1E8">从照片到候选地点</text>
+  </g>
+  <g font-family="-apple-system, BlinkMacSystemFont, Segoe UI, PingFang SC, Microsoft YaHei, sans-serif">
+    <rect x="48" y="100" width="180" height="84" rx="14" fill="#152235" stroke="#2B3E56"/>
+    <text x="68" y="132" font-size="15" fill="#F0A33A">01 · EXIF</text>
+    <text x="68" y="158" font-size="18" fill="#F4F1E8">读元数据</text>
+    <path d="M244 142 H272" stroke="#4EC8B8" stroke-width="2"/>
+    <path d="M268 134 L280 142 L268 150" fill="none" stroke="#4EC8B8" stroke-width="2"/>
+    <rect x="292" y="100" width="180" height="84" rx="14" fill="#152235" stroke="#2B3E56"/>
+    <text x="312" y="132" font-size="15" fill="#F0A33A">02 · Clues</text>
+    <text x="312" y="158" font-size="18" fill="#F4F1E8">列可见线索</text>
+    <path d="M488 142 H516" stroke="#4EC8B8" stroke-width="2"/>
+    <path d="M512 134 L524 142 L512 150" fill="none" stroke="#4EC8B8" stroke-width="2"/>
+    <rect x="536" y="100" width="200" height="84" rx="14" fill="#152235" stroke="#2B3E56"/>
+    <text x="556" y="132" font-size="15" fill="#F0A33A">03 · Route</text>
+    <text x="556" y="158" font-size="18" fill="#F4F1E8">加载领域/区域</text>
+    <path d="M752 142 H780" stroke="#4EC8B8" stroke-width="2"/>
+    <path d="M776 134 L788 142 L776 150" fill="none" stroke="#4EC8B8" stroke-width="2"/>
+    <rect x="800" y="100" width="160" height="84" rx="14" fill="#152235" stroke="#2B3E56"/>
+    <text x="820" y="132" font-size="15" fill="#F0A33A">04 · Verify</text>
+    <text x="820" y="158" font-size="18" fill="#F4F1E8">geo-sleuth</text>
+    <path d="M976 142 H1004" stroke="#4EC8B8" stroke-width="2"/>
+    <path d="M1000 134 L1012 142 L1000 150" fill="none" stroke="#4EC8B8" stroke-width="2"/>
+    <rect x="1024" y="100" width="128" height="84" rx="14" fill="#12362F" stroke="#4EC8B8"/>
+    <text x="1040" y="132" font-size="15" fill="#4EC8B8">05 · Out</text>
+    <text x="1040" y="158" font-size="18" fill="#F4F1E8">L0–L4</text>
+  </g>
+</svg>
