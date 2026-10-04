@@ -107,7 +107,7 @@ python scripts/board.py next
 
 `next` 只会说两种话：
 - **分不开**：按便宜到贵做区分检验，每项对全部候选一起做——查表 → 地形（平原 vs 山城，`tiles.py fetch --zoom 13` 或 `terrain.py`）→ 车辆涂装（`revimg.py --query "<城市> <颜色> 公交"`，从结果图读线路牌，按区县比车尾腰线）→ 市政设施（`baidu_pano.py sample --bbox <建成区> --n 24`）→ 水系/路网模板。都做过仍分不开：不要停，按它给的"份额 ÷ 页数"顺序扫。
-- **可以缩圈**：先 `board.py urban <候选>` 把范围缩到建成区（或 `scan-bbox` 手动给），再 `board.py falsify <候选> --text "…"` 写证伪条件，然后进第 3 步。
+- **缩圈时**：先 `board.py urban <候选>` 把范围缩到建成区（或 `scan-bbox` 手动给），再 `board.py falsify <候选> --text "…"` 写证伪条件，然后进第 3 步。
 
 环境粗定位的规则仍在：地形先于河宽和建筑色；物候必须配月份；罕见设施组合取交集；认得出的物种只当排除工具；只有地类时先用土地覆盖图缩到那类地块（`references/clues/`）。
 
