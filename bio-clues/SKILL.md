@@ -42,14 +42,43 @@ metadata:
 报城市前须另有独立线索；勿把「多为」写成必然；本领域不单独报 L3+。
 **生物线索必须先配拍摄月份**——同一树种在不同季节指示完全不同的纬度（见反例黑名单）。
 
+## 黄金出货（对照即用）
+
+缺月份 / 要省城 / 中文喂 iNat / 公园单株——直接套对应模板，禁止改写成定城句。
+
+**A · 行道树 + 无月份（问省）**
+```
+规则摘要：掌状裂落叶行道树（无年月） → 跳过物候；温带落叶绿化倾向
+动作：不跑 plant.py；请用户补拍摄月份
+档位：倾向
+```
+不定省、不定城。
+
+**B · 牦牛 + 非蒙古包帐篷（问哪里）**
+```
+规则摘要：牦牛 → 青藏高原及周边高海拔牧区
+动作：不套蒙古包规则；交回总技能找第二独立线索
+档位：倾向
+```
+不定县、不定点。
+
+**C · 公园银杏 + 要搜中文「银杏」定国**
+```
+规则摘要：公园单株银杏 + 中文名 → 栽培/绿化；禁止 species.py 吃中文
+动作：改 plant.py→拉丁名后再 species.py obs；本领域不定国家
+档位：本领域无可用规则
+```
+
 ## 反例黑名单
 
-- 单规则定城定点；脑补未见特征；线索不符仍强行套规则
-- **不配月份就套物候规则**（"常绿"在冬天是热带、在夏天毫无意义）
-- **把中文学名喂给 iNaturalist**（会撞车，见下）
-- 拿"某某植物分布于欧洲"这类散文当分布证据——要用 `species.py` 查**实际观测坐标**
-- 苔藓、枝条偏向推方位（原 `bio-clues/` 规则里有多条明确否定）
-- 单株植物识别结果当国别铁证（栽培、引种、公园绿化极常见）
+| 不要做 | 为什么 | 改做 |
+|---|---|---|
+| 单规则定城定点 / 脑补未见特征 | 本领域不报 L3+ | 止于倾向；交总技能 |
+| 无月份套物候（落叶/花期/候鸟） | 同种不同季指示不同纬度 | 跳过物候条；只报外貌 |
+| 中文名喂 iNaturalist / `species.py` | 会撞车（大熊猫→蜗牛） | 只用拉丁名或英文名 |
+| 散文「分布于欧洲」当证据 | 要观测坐标 | `species.py obs <拉丁名>` |
+| 苔藓/枝条偏向推方位 | 规则明确否定 | 不定南北 |
+| 公园/行道单株定国别 | 引种绿化极常见 | 结论止于栽培，不定国 |
 
 ---
 
@@ -68,9 +97,9 @@ metadata:
 
 ```bash
 set PLANTNET_API_KEY=你的key      # https://my.plantnet.org 免费注册（500 次/天）
-py geo-sleuth/scripts/plant.py identify leaf.jpg
-py geo-sleuth/scripts/plant.py identify leaf.jpg flower.jpg   # 同株 1–5 张更准
-py geo-sleuth/scripts/plant.py identify leaf.jpg --organ leaf # 指定部位
+python geo-sleuth/scripts/plant.py identify leaf.jpg
+python geo-sleuth/scripts/plant.py identify leaf.jpg flower.jpg   # 同株 1–5 张更准
+python geo-sleuth/scripts/plant.py identify leaf.jpg --organ leaf # 指定部位
 ```
 
 实测：2 张图（`flower, leaf`）→ `95.7% Brassica oleracea 野甘蓝`。
@@ -79,9 +108,9 @@ py geo-sleuth/scripts/plant.py identify leaf.jpg --organ leaf # 指定部位
 ### `species.py` — 物种 → 真实观测坐标（iNaturalist，**全体生物**）
 
 ```bash
-py geo-sleuth/scripts/species.py obs "Fagus sylvatica"        # 正查分布
-py geo-sleuth/scripts/species.py near 39.9042,116.4074 --radius 20   # 反查附近物种
-py geo-sleuth/scripts/species.py taxon "Ginkgo"                # 拿 taxon_id
+python geo-sleuth/scripts/species.py obs "Fagus sylvatica"        # 正查分布
+python geo-sleuth/scripts/species.py near 39.9042,116.4074 --radius 20   # 反查附近物种
+python geo-sleuth/scripts/species.py taxon "Ginkgo"                # 拿 taxon_id
 ```
 
 **反查是定位上最硬的用法**——拿候选地坐标看那里实际有哪些物种记录，**证伪候选地**：
@@ -200,7 +229,7 @@ python geo-sleuth/scripts/species.py near 39.9042,116.4074 --radius 20
 | `geo-sleuth/scripts/plant.py` | 有植物特写 | Pl@ntNet 识别（需 key） |
 | `geo-sleuth/scripts/species.py` | 拿到学名后 / 有候选坐标 | iNaturalist 正查分布、反查邻近物种 |
 | `references/野生动物与家畜.md` | 画面有野生动物/家畜 | 物种 → 生态区/保护区 |
-| `region/references/elements/植被.md` | 需物种级分布 | 481 条（**原作者自评"思路有较大错误，建议不要深入学习"**，只作参考） |
+| `region/references/elements/植被.md` | 需物种级分布 | 481 条；作者自评有误，**只作弱参考，不单独升格** |
 | `region/references/china|world/*.md` | 已知国家/省 | 该地的动物/保护区条目 |
 | `iplant.cn` | 已知物种名 | 中文名、图鉴、别名 |
 | Pl@ntNet / iNaturalist / 树木百科 | 网页备查 | identify.plantnet.org/zh ； inaturalist.org ； thetreeographer.com |
