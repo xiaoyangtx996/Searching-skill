@@ -15,12 +15,10 @@ description: 核验层（计算引擎）：把判读结论算成经得起对账�
 | **核验** | **本技能** | 这个结论经不经得起核对（数值、查表、排除、证据图） |
 | 检索 | 本技能 `intake.py`/`revimg.py`，或 `image-search-mcp` | 以图搜图（两边都能用，见 `references/data-sources.md`） |
 
-- **出货口径以 `wlmz` 的输出模板为准（L0–L4）**；本技能的「城市/片区/路/楼 × 高/中/低」只作内部计算档位，报结论前按 `../SKILL.md`（总技能） 的映射表换成 L0–L4。映射表在 `../SKILL.md`（总技能）。
-- 判读规则（172 条光影散文规则等）在 `lighting-astronomy/SKILL.md` 和 `lighting-astronomy/references/影子与太阳·本地计算.md`；**本技能只负责把它们算出来**，别在这里重复维护规则。
-- 查表：判读读各元素 `SKILL.md`，取值跑 `clues.py`（`data/*.json`，机器查表），两边不重复维护同一张表。
-- 🔴 **主闭环（`lighting-astronomy` ↔ 本技能）**：`lighting-astronomy` 给出可量化的影长比/高度角/时刻 →
-  跑 `sun.py locate` 出全球亮带 → 交 `region` 取带内城市 → `board.py add` 进候选盘 → `board.py rank` 排序。
-  **只在能算出数值时进这个闭环；算不出就老实走散文规则，不要硬凑。** 详见`docs/技能互联·产出手册.md`。
+- **出货 L0–L4**（总技能 `../SKILL.md`）；内部「城市/片区/路/楼 × 高/中/低」只作计算档，出货前换算。
+- 光影规则在 `lighting-astronomy/`；**本技能只算**，不重复维护散文规则。
+- 查表：判读读各元素 `SKILL.md`，取值跑 `clues.py`（`data/*.json`）。
+- 🔴 **主闭环**：有影长比/高度角/时刻 → `sun.py locate` → `region` → `board.py add/rank`。算不出数值 → 不硬进闭环。见 `docs/技能互联·产出手册.md`。
 
 > **命令约定（runtime 中立）**：先 `cd` 到本 SKILL.md 所在目录，再跑 `python scripts/<名>.py …`。没有 `python` 时用 `py`。有 `uv` 的环境可以把 `python scripts/` 换成 `uv run scripts/`，效果相同。不要写死某一台机器的盘符。
 >
@@ -84,9 +82,18 @@ description: 核验层（计算引擎）：把判读结论算成经得起对账�
 
 ## 流程
 
-不必走满：第 1 步识图直接命中时，跳到第 6、7 步确认。每一步的产出都要进候选盘。
+不必走满：识图直接命中 → 跳第 6 步。每步产出进候选盘。核验出货三行见上文。
 
-### 第 1 步：一条命令做完第 0–3 步
+| 步 | 一句话 | 关键命令 |
+|---|---|---|
+| 1 | 摄入 | `intake.py` + `board.py init` |
+| 2 | 列全/打分 | `board.py children/evidence/rank/next` |
+| 3 | 选分支缩圈 | 见分支表 → geometry/sky/corridors/search |
+| 4 | 卫星排序 | `sat_scan.py grid/points` |
+| 5 | 街景排序 | `baidu_pano/gsv` + `match.py rank` |
+| 6 | 机位+出货 | `board.py check/report` + `evidence.py`；过 STOP |
+
+### 第 1 步：摄入
 
 ```bash
 python scripts/intake.py photo.jpg --out-dir intake/ [--box x0,y0,x1,y1 ...] [--proxy socks5://127.0.0.1:10808]
