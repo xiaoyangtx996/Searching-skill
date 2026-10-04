@@ -1,4 +1,4 @@
----
+﻿---
 name: wlmz-guangying-tianwen
 description: "Use when 照片里有影子、太阳方位、日照时间时 — sun position, shadows, time-of-day.; match 线索→结论 from visible clues."
 version: 1.1.0
@@ -12,10 +12,13 @@ metadata:
 
 太阳方位、影子、日照、时区推断
 
+
 ## 何时加载
 
 照片中出现 光影天文 相关元素、需要据此推断地点时加载本技能。
 <!-- darwin-wrapper:v1 -->
+
+> **旁挂**：`lighting-astronomy/references/日出日落与阴影反算.md` —— richurimo 日出日落反算经纬度、垂尾投影算影长（航班案例）。
 
 ## 使用方式
 
@@ -25,7 +28,7 @@ metadata:
 
 | 触发 | 一线修复 | 仍失败兜底 |
 |---|---|---|
-| 无线索命中 | 换领域或加载 `methodology` | 写明本领域无可用规则 |
+| 无线索命中 | 换领域或加载解题方法论 | 写明本领域无可用规则 |
 | 规则与季节/半球冲突 | 跳过该条 | 只输出倾向 |
 | 仅命中1条 | 结论止于倾向区域 | 请用户补图或交叉其它领域 |
 
@@ -38,6 +41,23 @@ metadata:
 - 单规则定城定点；脑补未见特征；线索不符仍强行套规则
 
 ---
+
+> **本地计算**：本文件是「线索 → 结论」的规则表；要把某条结论**算成数值**（影长比→高度角、
+> 时刻→地图上的地带、地点+日期→拍摄时刻、太阳像素→镜头朝向、卫星锅→经度），
+> 读 `lighting-astronomy/references/影子与太阳·本地计算.md`，跑 `geo-sleuth/scripts/sun.py`。 **另见** `lighting-astronomy/references/Chronolocation·太阳阴影定位法.md`（Bellingcat 方法）。
+> 外部工具 ShadowFinder（全球亮带图 / Colab）的用法、以及何时该用它而不是 `sun.py locate`，也在那份文件里。
+>
+> 🔴 **强制闭环（不许停在「画面是上午拍的」）**：
+> 只要本域给出**可量化**的方位/角度/时刻，必须走完这条链：
+>
+> | 步 | 谁 | 产出 | 交给 |
+> |---|---|---|---|
+> | 1 | `lighting-astronomy` | 影长比 / 太阳高度角 / 推定时刻 | → `geo-sleuth/scripts/sun.py locate` |
+> | 2 | `sun.py locate` | 全球亮带（候选纬度带） | → `region`（带内查城市） |
+> | 3 | `region` | 候选城市 | → `geo-sleuth/scripts/board.py add` |
+> | 4 | `board.py rank` | 排序 + 误差半径 | → 总技能出结论 |
+>
+> 详见`docs/技能互联·产出手册.md`。**光影↔geo-sleuth 是核验层的主闭环，跳过视为未执行。**
 
 ## 太阳方位与影子 · 工具
 
@@ -256,6 +276,7 @@ metadata:
 ## 天文气象工具 · 工具
 
 - **Earth Nullschool** — https://earth.nullschool.net/
+- 运动物体受光面明亮侧朝向拍摄者 → 拍摄者面向太阳相反方向，可推断物体运动方向
 
 ---
 

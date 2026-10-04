@@ -1,0 +1,20 @@
+{
+  "name": "image-search-mcp",
+  "version": "1.0.0",
+  "description": "MCP server for reverse image search (Google Lens / Bing / Yandex / Baidu)",
+  "type": "module",
+  "bin": {
+    "image-search-mcp": "src/index.js"
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "install-browser": "playwright install chromium"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "playwright": "^1.49.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

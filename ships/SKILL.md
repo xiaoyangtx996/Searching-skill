@@ -1,4 +1,4 @@
----
+﻿---
 name: wlmz-lunchuan
 description: "Use when 照片里有轮船、港口、码头时 — ships and ports.; match 线索→结论 from visible clues."
 version: 1.1.0
@@ -12,10 +12,15 @@ metadata:
 
 船型、船籍、港口码头
 
+
 ## 何时加载
 
 照片中出现 轮船 相关元素、需要据此推断地点时加载本技能。
 <!-- darwin-wrapper:v1 -->
+
+> **旁挂**：`ships/references/船舶识别与AIS.md` —— IMO/MMSI 与 MID 国家码、方便旗陷阱、MarineTraffic 等 AIS 查询。
+
+> **产出去哪**：船型 / 船籍港 / 航线 / 港口设施 → 交 `region`（船籍港文字）+ `infrastructure`（码头结构）。详见 `docs/技能互联·产出手册.md`。
 
 ## 使用方式
 
@@ -25,7 +30,7 @@ metadata:
 
 | 触发 | 一线修复 | 仍失败兜底 |
 |---|---|---|
-| 无线索命中 | 换领域或加载 `methodology` | 写明本领域无可用规则 |
+| 无线索命中 | 换领域或加载解题方法论 | 写明本领域无可用规则 |
 | 规则与季节/半球冲突 | 跳过该条 | 只输出倾向 |
 | 仅命中1条 | 结论止于倾向区域 | 请用户补图或交叉其它领域 |
 

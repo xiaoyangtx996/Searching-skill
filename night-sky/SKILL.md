@@ -1,4 +1,4 @@
----
+﻿---
 name: wlmz-xingkong
 description: "Use when 照片里有星座、银河、月相时 — stars and hemispheres.; match 线索→结论 from visible clues."
 version: 1.1.0
@@ -12,10 +12,15 @@ metadata:
 
 星座、银河、星轨与南北半球判断
 
+>
+> **旁挂**：`night-sky/references/光污染分级.md` — 波特尔 Bortle 分级，「可见最暗星等」→ 城/郊/野。
+
 ## 何时加载
 
 照片中出现 星空 相关元素、需要据此推断地点时加载本技能。
 <!-- darwin-wrapper:v1 -->
+
+> **产出去哪**：星座 / 银河走向 / 光污染等级 → 交 `spatiotemporal-culture`（星座方位+时刻→纬度季节）+ `lighting-astronomy`；光污染可排除大城市。详见 `docs/技能互联·产出手册.md`。
 
 ## 使用方式
 
@@ -25,7 +30,7 @@ metadata:
 
 | 触发 | 一线修复 | 仍失败兜底 |
 |---|---|---|
-| 无线索命中 | 换领域或加载 `methodology` | 写明本领域无可用规则 |
+| 无线索命中 | 换领域或加载解题方法论 | 写明本领域无可用规则 |
 | 规则与季节/半球冲突 | 跳过该条 | 只输出倾向 |
 | 仅命中1条 | 结论止于倾向区域 | 请用户补图或交叉其它领域 |
 

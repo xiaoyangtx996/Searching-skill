@@ -1,4 +1,4 @@
----
+﻿---
 name: wlmz-fangfa
 description: "Use when 需要定位推理流程、排除法、交叉验证时 — geolocation method and workflow.; match 线索→结论 from visible clues."
 version: 1.1.0
@@ -11,6 +11,7 @@ metadata:
 # 解题方法论
 
 识图流程、推理链、排除法与复盘
+
 
 ## 何时加载
 
@@ -25,7 +26,7 @@ metadata:
 
 | 触发 | 一线修复 | 仍失败兜底 |
 |---|---|---|
-| 无线索命中 | 换领域或加载 `methodology` | 写明本领域无可用规则 |
+| 无线索命中 | 换领域或加载解题方法论 | 写明本领域无可用规则 |
 | 规则与季节/半球冲突 | 跳过该条 | 只输出倾向 |
 | 仅命中1条 | 结论止于倾向区域 | 请用户补图或交叉其它领域 |
 
@@ -272,6 +273,8 @@ metadata:
 - **虫部落搜索** — https://search.chongbuluo.com/
 - **TinEye** — https://tineye.com/
 - **Wayback 网页时光机** — https://web.archive.org/
+- 区域风格只能给出城市级假设 → 需再用标志性设施（摩天轮、塔、桥）验证
+- 同一地点的不同角度照片 → 需靠共同结构细节确认，而非整体轮廓
 
 ---
 

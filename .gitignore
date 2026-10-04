@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+
+# Node
+node_modules/
+*.log
+
+# Local caches / run output
+.tuxun_cache/
+.geo-cache/
+results/
+.profile/
+
+# Phone raw DB (>100MB, exceeds GitHub limit). Ship phone_index.json instead.
+phone-attribution/phone.json
+
+# OS / editor junk
+.DS_Store
+Thumbs.db
+*.swp
+*~

@@ -14,11 +14,11 @@ metadata:
 
 | 号码类型 | 走哪条 | 网络 |
 |---|---|---|
-| **11 位手机号** | `phone_lookup.py`（本地 `phone.json`，无索引则直接扫库） | ❌ **零网络** |
+| **11 位手机号** | `phone_lookup.py`（优先 `phone_index.json`，无索引则扫本地 `phone.json`） | ❌ **零网络** |
 | **座机号**（区号+本地号） | chahaoba.com `api.php` 反查单位名与坐标 | ✅ 需联网 |
 
 > 数据源：
-> - **本地号段库**：`phone.json`（483,977 条，字段：`prefix_3` `prefix_7` `middle_4` `operator` `province` `city` `area_code` `postal_code`）
+> - **本地号段库**：仓库自带 `phone_index.json`（约 2.3 MB，由 483,977 条压缩）；可选本地另放 `phone.json` 原始库供重建索引（>100 MB，不入库）
 > - **座机单位库**：[查号吧 chahaoba.com](https://www.chahaoba.com/)（MediaWiki，网友提交的「单位电话归类」结构化条目）
 >
 > 本技能是**查询方法 + 边界闸门**，不是自动爬虫；chahaoba 部分按站点 robots.txt 合规，一律用 `api.php`。
@@ -216,9 +216,9 @@ curl -s "https://www.chahaoba.com/api.php?action=parse&pageid=<id>&prop=wikitext
 
 | 路径 | 何时用 | 怎么用 |
 |---|---|---|
-| `phone-attribution/phone.json` | 中国 11 位手机 | 号段库；`phone_lookup.py` 直接扫它 |
-| `phone-attribution/phone_lookup.py` | 上一步 | `python phone-attribution/phone_lookup.py <号>`；有 `phone_index.json` 则加速 |
-| `phone-attribution/build_phone_index.py` | 想加速时 | 生成索引；无索引也能查 |
+| `phone-attribution/phone_index.json` | 中国 11 位手机 | 默认查这个（入库） |
+| `phone-attribution/phone_lookup.py` | 上一步 | `python phone-attribution/phone_lookup.py <号>` |
+| `phone-attribution/build_phone_index.py` | 有本地 `phone.json` 时 | 重建 `phone_index.json` |
 | `https://www.chahaoba.com/api.php` | 座机 | `action=query&list=search` 用**本地号码段**；`action=parse&prop=wikitext` 取 `{{单位电话归类}}` |
 | `geo-sleuth/data/cn_area_codes.json` | 座机之前 | 离线区号→城市，零请求 |
 | `geo-sleuth/scripts/clues.py` | 同上 | `python geo-sleuth/scripts/clues.py lookup area-code 023` |
