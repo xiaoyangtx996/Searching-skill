@@ -100,29 +100,30 @@ python scripts/intake.py photo.jpg --out-dir intake/ [--box x0,y0,x1,y1 ...] [--
 python scripts/board.py init --photo photo.jpg
 ```
 
-`intake.py` 一般 1–2 分钟，第一次运行要装依赖会更久：命令超时给够（10 分钟以上）或放后台跑。被命令超时打断时，识图子进程可能还在往 `rev/` 里写文件，但不会生成 `intake.md`，别当成已经跑完。
+超时给 ≥10 分钟或放后台。无 `intake.md` = 未跑完（别读半成品 `rev/`）。
 
-`intake.md` 里有：元数据、OCR 文字（放大/切块读出的标 pass=up/tile，是假设）、百度相似图片（来源站点计数 + 编号拼图）、识图标签分级计票、疑似小区/楼盘名、边缘图清单、失败项。然后你做四件事：
+| 做 | 命令/动作 |
+|---|---|
+| 看图 | `edges/` + `references/observe.md`；`board.py clue … --status observed\|read\|inferred\|computed --file …` |
+| 查表 | `clues.py lookup`；能落行政区 → `board.py apply --kind plate --value …` |
+| 识图 | 开 `rev/*_baidu_similar.jpg`；小区/酒店名 → `poi.py` → `board.py add --from` 全进盘 |
+| 元数据 | 一律 inferred；IP≠拍摄地 |
 
-- **看图**：`edges/` 四边四角逐张看；`references/observe.md` 的清单过一遍；每条线索 `board.py clue "<文本>" --kind <类> --status observed|read|inferred|computed --file <放大图>`。状态要诚实：读出来的字是 read，"楼大概 8 层""路在上坡"是 inferred。
-- **查表**：车牌、区号、电话国家码、行驶方向、海外领地 → `clues.py lookup <kind> <value>`；能落到行政区的直接 `board.py apply --kind plate --value 渝G --file <放大图>`（自动加候选和证据，同级其余候选只降权不排除）。
-- **识图结果**：先打开 `rev/<名>_baidu_similar.jpg`（左上角是查询图），找同一个物体或同一处场景的近重复照片，有就按编号去 JSON 的 `similar[i].from` 看来源页；标签里的小区名、楼盘名、酒店名 → `poi.py "<名>" --city <城市> --out pois.json` 落坐标，同名的（几个校区、几家分店）`board.py add --from pois.json --level area` 全部进盘再核；截图务必打开看，命中帖子后把同组照片也看一遍。检索处按物体类型选（`references/search.md`）。
-- **提示与元数据**：逐条登记为 inferred 线索，写明可信度；IP 属地只说明发帖时人在哪，发帖时间不是拍摄时间。
-
-### 第 2 步：候选列全、证据打分、看下一步
+### 第 2 步：列全 / 打分 / next
 
 ```bash
-python scripts/board.py children <上级行政区名>          # 直辖市 → 全部区县；国家 → 一级行政区（gazetteer.py 查 OSM，带 bbox）
-python scripts/board.py evidence --clue K1 --for <候选A>:5 --for <候选B>:2 --against <候选C>:0.3 --why "…" --file <比对图>
+python scripts/board.py children <上级行政区名>
+python scripts/board.py evidence --clue K1 --for <A>:5 --for <B>:2 --against <C>:0.3 --why "…" --file <图>
 python scripts/board.py rank
 python scripts/board.py next
 ```
 
-`next` 只会说两种话：
-- **分不开**：按便宜到贵做区分检验，每项对全部候选一起做——查表 → 地形（平原 vs 山城，`tiles.py fetch --zoom 13` 或 `terrain.py`）→ 车辆涂装（`revimg.py --query "<城市> <颜色> 公交"`，从结果图读线路牌，按区县比车尾腰线）→ 市政设施（`baidu_pano.py sample --bbox <建成区> --n 24`）→ 水系/路网模板。都做过仍分不开：不要停，按它给的"份额 ÷ 页数"顺序扫。
-- **缩圈时**：先 `board.py urban <候选>` 把范围缩到建成区（或 `scan-bbox` 手动给），再 `board.py falsify <候选> --text "…"` 写证伪条件，然后进第 3 步。
+| `next` 说 | 立刻做 |
+|---|---|
+| 分不开 | 便宜→贵：查表 → 地形(`tiles`/`terrain`) → 公交涂装(`revimg`) → 市政抽样(`baidu_pano sample`) → 路网；仍分不开按「份额÷页数」扫 |
+| 缩圈时 | `board.py urban` → `falsify` → 第 3 步 |
 
-环境粗定位的规则仍在：地形先于河宽和建筑色；物候必须配月份；罕见设施组合取交集；认得出的物种只当排除工具；只有地类时先用土地覆盖图缩到那类地块（`references/clues/`）。
+粗定位：地形优先；物候须配月份；物种只排除；地类先缩土地覆盖（`references/clues/`）。
 
 ### 第 3 步：选分支缩圈
 
@@ -142,41 +143,32 @@ python scripts/board.py next
 | 连锁品牌子品牌门店 | 先搜开业新闻稿拿地址，定位器只当候选池 → `osm.py along` + 街景抽样 | `search.md` |
 | 机窗、无人机俯拍 | 航拍分支 | `aerial.md` |
 
-### 第 4 步：卫星图找点——机器先排序
+### 第 4 步：卫星排序
 
 ```bash
 python scripts/sat_scan.py grid --bbox <scan_bbox> --zoom 17 --preset track --multi-scale --top 30 --out sat.json --sheet sat_top.jpg --heat heat.jpg
-python scripts/poi.py "<区县> 学校" --city <地级市> --out schools.json      # 种子：--seeds schools.json 给附近格子加分
-python scripts/sat_scan.py points --points big.json --preset factory --out r.json --sheet r.jpg   # osm.py buildings / poi.py 的候选点排序
+python scripts/poi.py "<区县> 学校" --city <地级市> --out schools.json
+python scripts/sat_scan.py points --points big.json --preset factory --out r.json --sheet r.jpg
 ```
 
-- 预设：track（操场跑道）、stadium、factory、silo、dam、bridge、quarry、solar、greenhouse、port；自定义 `--query`。实测：城区 300 多格里，OSM 标注的跑道一半以上进前 30 名；国内 OSM 空白的老城，学校操场也能排第一。**它是排序不是判定**：看前 20–30 格的缩略图，再按照片里的方位、形状核。
-- 把画面描述翻译成俯视特征后再看：圆弧楼、八角亭屋顶、球场、车位和铁路垂直；高楼看楼底；影像有年代。
-- 候选多时列候选表：一行一个点，一列一条照片里直接看得到的标准。
-- 前 30 名都没对上：先回头看 `board.py check` 列的"被推测降权的候选"和证伪条件，再换预设或 z18，最后才扩大范围。
+预设：track/stadium/factory/silo/dam/bridge/quarry/solar/greenhouse/port 或 `--query`。**排序≠判定**：只看前 20–30 缩略图，按方位/形状核。前 30 全不对 → `board.py check` 回头 → 换预设/z18 → 最后才扩范围。
 
-### 第 5 步：确认——街景也先排序
+### 第 5 步：街景排序
 
 ```bash
-python scripts/baidu_pano.py scan <lat,lon> --radius 300 --out panos.json                     # 国内；国外 gsv.py
+python scripts/baidu_pano.py scan <lat,lon> --radius 300 --out panos.json   # 国外用 gsv.py
 python scripts/match.py rank --query photo.jpg --panos panos.json --toward <地标lat,lon> --spread 15 --refine sift --top 10 --out m.json --sheet m.jpg
-python scripts/match.py rank --query photo.jpg --items around.index.json --render gsv --spread-headings -30,0,30 --out m.json --sheet m.jpg
 ```
 
-- `match.py` 用 DINOv2 全局相似度粗排、SIFT 内点精排；实测同一地点不同年份的街景真值都进前 4。只打开前 10 名，比**不变特征**（楼的轮廓、窗位、阳台、电杆位置、路缘、山脊），不比车辆、招牌、树叶。到路 ≥2 项、到楼 ≥3 项。内点 ≥15 的一张都没有**不代表不对**：换季、老批次、照片在人行道而街景在路中间时，真值实测只有 5 个、0–8 个内点（两例），先打开前 10 张比不变特征，都不对再换 `--spread-headings` 或扩大 `--within`。全局分会被季节主导（花期批次不论在哪都排前面），和照片同季节的历史批次（`gsv.py sheet --date`）最好比。
-- 全景点多时按日期和道路分组，`sheet --road <路名> --spread 60` 只看一条路；老批次视野更开阔。
-- 没有街景不等于不能确认：`terrain.py view --photo` 比山脊；给候选设施找名字（OSM 名字、附近地名 + 当地语言的设施类型词），搜新闻、百科、官网配图比立面细节。
-- 街景比照片早很多年时，以老建筑和永久结构为准。
+只开前 10：比不变特征（轮廓/窗位/电杆/路缘/山脊），不比车/招牌/树叶。到路≥2、到楼≥3。内点全<15 ≠ 否决 → 换 `--spread-headings` / 同季节批次。无街景 → `terrain.py view --photo` 或搜设施配图。
 
-### 第 6 步：定机位与输出
+### 第 6 步：机位与出货
 
-- 回头看：在对上的街景点转 180°，看拍摄者那一侧是什么。
-- 机位要两条独立约束（`geo.py intersect` 视线交会、`geo.py line` 对齐线、`pose.py` 多点反解、拍摄高度、反向街景）；只有一条时，楼级置信度最高"中"。
-- 朝向没有可量的影子时用受光面：`sun.py facing --lit left --shaded camera`。车里、船上、火车上拍的写出行进方向。
+两条独立约束才报楼（`geo.py intersect/line` / `pose.py` / 反向街景）；一条 → 楼级最高「中」。无影用 `sun.py facing`。
 
 ```bash
-python scripts/board.py check                      # 出结论前：排除有文件吗、主答案有核实证据吗、哪些线索没用上
-python scripts/board.py report --merge result.json # 主答案=第一名；备选、排除、未用线索自动写进 result.json
+python scripts/board.py check
+python scripts/board.py report --merge result.json
 python scripts/evidence.py spec.json --out evidence.jpg
 ```
 
