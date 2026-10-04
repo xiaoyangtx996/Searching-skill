@@ -1,7 +1,7 @@
 ---
 name: wlmz-shengwu
-description: "Use when 照片里有植物、树木、农作物、家畜、野生动物、鸟类时 — 生物线索: vegetation, crops, livestock and wildlife for geolocation.; 树种, 林相, 棕榈, 雪松, 稻田, 牦牛, 候鸟, 特有种, 物种识别."
-version: 1.0.0
+description: "Use when 照片有植物/树木/农作物/家畜/野生动物/鸟类 — 过闸门后抄规则或 plant.py→species.py；无月份不做物候；不报L3+. vegetation, crops, livestock, wildlife; 树种, 棕榈, 牦牛, 候鸟."
+version: 1.1.0
 metadata:
   hermes:
     category: wlmz
@@ -20,15 +20,14 @@ metadata:
 
 ## 使用方式
 
-| 步 | 输入 | 动作 | 输出 |
-|---|---|---|---|
-| 1 | 画面里的植物/作物/家畜/动物 | 套「一、四个子类」只选一类 | 子类名 |
-| 2 | 该类可见特征 | 先过「二、识别链路与闸门」，不过则跳过 | 过闸 / 跳过原因 |
-| 3 | 过闸的特征 | 对照「树种与覆被」「农作物」「家畜」表，或读 `references/野生动物与家畜.md` | 规则摘要一行 |
-| 4 | 有叶片花果特写且有 key | `python geo-sleuth/scripts/plant.py identify <图>` → 拉丁名 → `species.py obs` | 学名与观测范围 |
-| 5 | 步骤 3–4 的结论 | 交回总技能互证 | 本领域不报 L3+ |
+| 步 | 立刻做 | 细则在 |
+|---|---|---|
+| 1 | 只选一个子类 | §一 |
+| 2 | 过闸门；出三行（规则摘要/动作/档位） | §二 |
+| 3 | 抄规则表或跑 plant→species | §二命令 + 后文表 |
+| 4 | 交回总技能；不报 L3+ | STOP / 黄金出货 |
 
-无命中 → 换领域。条件冲突 → 跳过该条。只命中 1 条 → 止于倾向，不升格点位。
+无命中 → 换领域。冲突 → 跳过。只命中 1 条 → 止于倾向。
 
 ### 🔴 CHECKPOINT · 🛑 STOP
 

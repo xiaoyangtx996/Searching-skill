@@ -1,6 +1,6 @@
 ---
 name: geo-sleuth
-description: 核验层（计算引擎）：把判读结论算成经得起对账的证据——候选盘排序排除、太阳与影子、OSM 走廊、DEM 天际线、多点反解机位、误差半径、证据图。由 `wlmz` 技能路由后调用，不单独承担「这是哪」的判读。Compute/verification layer for photo geolocation: candidate board with likelihood ranking, sun and shadow math, OSM Overpass, DEM skyline rendering, multi-point camera pose solve, error radius, evidence image. Use when wlmz routes a numeric check, or the user asks 核验 / 算影长 / 反推拍摄时刻 / 反解机位 / 生成证据图 / 查车牌区号 / verify this geolocation.
+description: "Use when 需要核验/算影长/反推拍摄时刻/反解机位/生成证据图/查车牌区号/verify geolocation — wlmz 核验层（计算引擎）: candidate board, sun/shadow, OSM, DEM skyline, pose solve, error radius, evidence image. 不单独判读「这是哪」."
 ---
 
 # 迷踪 · geo-sleuth（v2）
@@ -178,6 +178,8 @@ python scripts/evidence.py spec.json --out evidence.jpg
 误差半径要 ≤100 m：须已有两条独立约束交会，或实景 ≥3 项不变特征，且已跑 `pose.py project`；缺一项就降档，不向用户追问「要不要先报一个点」。
 
 ## 黄金出货（对照即用）
+
+三行格式同上文「核验出货」；模板 = STOP 场景的标准出货。
 
 **A · 已有城市倾向 + 短影，只核验（未跑脚本）**
 ```

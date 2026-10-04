@@ -1,7 +1,7 @@
 ---
 name: wlmz-dianhua
-description: "Use when 照片里的招牌/门头/广告牌/围挡上有电话号码（座机或手机）要反查位置时 — 号码归属查询: phone number reverse lookup for geolocation.; 座机号码, 手机号段, 11位号码, 区号, 单位电话, 查号吧, chahaoba."
-version: 2.0.0
+description: "Use when 招牌/门头/广告牌/围挡上有电话号码要反查位置 — 手机走本地 phone.json；座机走 chahaoba api.php；归属地≠拍摄点, 不报 L3+. phone reverse lookup; 座机, 号段, 区号, 查号吧."
+version: 2.1.0
 metadata:
   hermes:
     category: wlmz
@@ -94,12 +94,10 @@ metadata:
 
 ## 反例黑名单
 
+主禁令见「三、边界」止于/禁止列。补两条边界未写的：
+
 | 不要做 | 为什么 | 改做 |
 |---|---|---|
-| 单规则定城定点 | 本领域不报 L3+ | 止于倾向 |
-| 单位坐标当拍摄机位 | 那是单位地址 | 只缩候选，交 geo-sleuth |
-| 十年前条目当仍在营业 | 可能搬迁/注销 | 降权，交叉其它线索 |
-| 连锁/总部号当地点独有 | 全国共用 | 只报企业倾向 |
 | 忽略携号转网 | 归属地漂移 | 弱线索 |
 | 查询结果当「已核实」 | 库非铁证 | 必须二次交叉 |
 

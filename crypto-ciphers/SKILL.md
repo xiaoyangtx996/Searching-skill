@@ -1,6 +1,6 @@
 ---
 name: wlmz-mima
-description: "Use when 图中有密文、编码串、摩斯码、二维码、隐写、多层加密，或题目要求解密/破译时 — codes, ciphers, steganography.; 判「编码还是加密」并给出解密链路."
+description: "Use when 密文/编码串/摩斯/二维码/隐写/多层加密或题目要求解密破译 — 判编码vs加密，逐层记三行，缺密钥STOP，明文回灌 language-script，不报L3+. codes, ciphers, steganography."
 version: 1.0.0
 metadata:
   hermes:
@@ -124,7 +124,7 @@ openssl enc -d -aes-256-cbc -a -in cipher.txt -k "<密钥>" -out plain.txt
 
 ---
 
-## 古典替换（指纹表）
+## 扩展指纹 · 古典替换（步1 主表未命中时）
 
 | 看见 | 形态 | 立刻做 |
 |---|---|---|
@@ -135,7 +135,7 @@ openssl enc -d -aes-256-cbc -a -in cipher.txt -k "<密钥>" -out plain.txt
 | 数字串贴键盘位 | 键盘代换 | 美式 QWERTY 还原拼音/英文 |
 | 题面多个数字可拼 | 凯撒数字钥 | `年+期+位数`（例 `20221710`）→ 密钥清单第 1 条 |
 
-## 隐写与容器（指纹表）
+## 扩展指纹 · 隐写与容器（步1/步5）
 
 | 看见 | 形态 | 立刻做 |
 |---|---|---|
@@ -146,8 +146,6 @@ openssl enc -d -aes-256-cbc -a -in cipher.txt -k "<密钥>" -out plain.txt
 | 音频 | SSTV/频谱 | SSTV 解码或看频谱 |
 | 文件尾/EXIF 异常 | 尾部追加 | 查二进制尾与元数据 |
 | 短码文件名 | 隐藏入口 | 例 `NIVhyB` → 试 `mdl.ink/NIVhyB` |
-
-密钥来源见上文「密钥清单」，本节不重复。
 
 ## 资源
 
