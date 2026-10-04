@@ -228,16 +228,24 @@ python scripts/evidence.py spec.json --out evidence.jpg
 - 单个片区全景点 ≤500 个；3 个片区都没对上就停，`board.py report` 报告已确定到哪一级。
 - 停之前 `board.py check`：被推测降权但没排除的候选按排序先回头看前 20 个。
 
+## 资源
+
+| 路径 | 何时用 | 怎么用 |
+|---|---|---|
+| `scripts/board.py` | 全程 | init/clue/evidence/rank/next/check/report |
+| `scripts/intake.py` `sun.py` `sat_scan.py` `match.py` `pose.py` | 步骤 1/3/4/5/6 | 见流程命令块 |
+| `scripts/clues.py` + `data/*.json` | 查表 | `clues.py lookup <kind> <value>` |
+| `references/geometry.md` `sky.md` `corridors.md` `search.md` `observe.md` | 分支缩圈 | 第 3 步「读」列 |
+| `references/data-sources.md` | 脚本清单/API | 安装与数据源 |
+| `../SKILL.md` | 出货前 | L0–L4 映射 |
+
 ## 运行环境
 
-- Python 3.10+。一律 `python scripts/xxx.py`（相对本 skill 目录）。`revimg.py`/`intake.py` 需要本机 Chrome；`ocr.py` 在 macOS 用 Apple Vision，Windows 用 RapidOCR。缺依赖时按各脚本文件头安装。
-- 代理地址以 `GEO_PROXY` 环境变量为准（`export GEO_PROXY=socks5h://...`），文中和脚本帮助里的 `127.0.0.1:10808` 是示例端口，换成你自己的。走代理：Google 卫星图、Google 街景、Overpass、Yandex、HuggingFace。直连：百度全景、百度识图、必应国内版、高程切片。`intake.py --proxy` 写 `socks5://`（Chrome 的写法）。
-- 缓存写当前目录 `.geo-cache/`；候选盘是当前目录 `board.json`。脚本清单和数据源见 `references/data-sources.md`。
-- macOS 没有 `timeout` 命令；zsh 里 `$var` 不分词，循环用 `bash -c` 或 `${=var}`。整省 Overpass 查询可能要几分钟，放后台跑。
+- Python 3.10+。`cd` 本 skill 目录后 `python scripts/xxx.py`（无 `python` 用 `py`）。
+- `GEO_PROXY` 控制代理；缓存 `.geo-cache/`；候选盘 `board.json`。
+- `revimg.py`/`intake.py` 需 Chrome；`ocr.py`：macOS=Vision，Windows=RapidOCR。
 
 ### 附录 · 全库遍历（非核验主路径）
-
-主路径是上文第 1–6 步 + `board.py`。下列脚本供「强制扫全技能」时用，**不替代**核验闭环：
 
 | 脚本 | 命令 |
 |---|---|
