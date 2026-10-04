@@ -1,6 +1,6 @@
 ---
 name: wlmz-shikong
-description: "Use when 照片里有人群聚集/节庆活动/特色穿戴/需要反推拍摄时间与节日时 — 时空文化溯源: crowd gatherings, festivals, ethnic wearables, date and event inference.; match 线索→结论 from visible clues."
+description: "Use when 人群聚集/节庆/特色穿戴/反推拍摄时间节日 — 7级优先级+穿戴闸门+日历+热点仅解释；不报L3+. festivals, ethnic wearables, temporal inference."
 version: 1.1.0
 metadata:
   hermes:
