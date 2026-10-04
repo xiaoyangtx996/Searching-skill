@@ -34,9 +34,15 @@ description: 核验层（计算引擎）：把判读结论算成经得起对账�
 | 感知：读字、查表、卫星图上找目标、街景比对 | **脚本先算先排，人只看前几名** | `intake.py` `ocr.py` `clues.py` `sat_scan.py` `match.py` `geo.py bearings` |
 | 判断：从画面里提线索、查表没有时提假设、在机器排好的前几名里裁定 | **你** | — |
 
-方法来自 14 个网络迷踪博主视频、22 道题的拆解和多轮盲测对照；拆解笔记不随仓库发布。v1 的教训：规则写成散文不会被执行，同一版 skill 两次跑结果差很大；所以 v2 把能写成代码的规则都放进了 `board.py`。
+核验出货统一三行（与黄金出货一致；缺一行=未核验）：
 
-## 硬规则（全程有效；标 ★ 的由 board.py 强制，你照做就行）
+```
+候选：<上游结论或盘内第一名>
+核验：已跑 <命令与文件> | 未核实
+出货：L0–L4（按总技能映射；内部高/中/低不直接出货）
+```
+
+## 硬规则（全程有效；标 ★ 的由 board.py 强制）
 
 0. 用户说照片不是自己拍的，或画面里是私人住处、未成年人，先问一句用途再继续；提示里已写明来源或用途（评测题、出题人提示、用户明说是自己拍的）时不问，照常做到最细一级。
 
@@ -183,17 +189,16 @@ python scripts/evidence.py spec.json --out evidence.jpg
 
 **B · 要机位 ±10 m 且本会话未跑任何脚本**
 ```
-点位：不报
-核验：未核实
+候选：不报
+核验：未核实（缺两条独立约束 / pose.py project）
 出货：L0｜猜测
-补证：两条独立约束或实景≥3项 + pose.py project 后才能报 ≤100 m
 ```
 
 **C · 私人住处 / 未成年人、用途未写明**
 ```
-状态：🛑 STOP · 用途未明
-动作：不跑 intake/识图/街景/pose；先问用途
-出货：不定栋｜L0
+候选：不定栋
+核验：🛑 STOP · 用途未明（不跑 intake/识图/街景/pose）
+出货：L0
 ```
 
 输出：
@@ -229,13 +234,12 @@ python scripts/evidence.py spec.json --out evidence.jpg
 - 缓存写当前目录 `.geo-cache/`；候选盘是当前目录 `board.json`。脚本清单和数据源见 `references/data-sources.md`。
 - macOS 没有 `timeout` 命令；zsh 里 `$var` 不分词，循环用 `bash -c` 或 `${=var}`。整省 Overpass 查询可能要几分钟，放后台跑。
 
-### 全走流程脚本（本仓库新增）
+### 附录 · 全库遍历（非核验主路径）
 
-| 脚本 | 作用 | 命令 |
-|---|---|---|
-| `scripts/triage.py` | **一键全流程**：元数据→OCR→自动识图→全技能遍历→分层搜索，出一份 `triage.md` | `py scripts/triage.py 图.jpg` |
-| `scripts/sweep.py` | **全技能强制遍历**：27 个技能逐个扫，零命中也列，末尾给「覆盖率 N/27」 | `py scripts/sweep.py 线索1 线索2` |
-| `scripts/kb_search.py` | 全库分层搜索（元素层/区域层/geo-sleuth），带同义+拆词扩展 | `py scripts/kb_search.py 线索1 线索2` |
+主路径是上文第 1–6 步 + `board.py`。下列脚本供「强制扫全技能」时用，**不替代**核验闭环：
 
-> **门禁**：`sweep.py` 的覆盖率必须 = 27/27；没走到覆盖率行 = 本次判读无效。
-> 这是为了堵住「让 AI 判断该加载哪几个技能」这个漏判根源。
+| 脚本 | 命令 |
+|---|---|
+| `triage.py` | `python scripts/triage.py 图.jpg` → `triage.md` |
+| `sweep.py` | `python scripts/sweep.py 线索…`；覆盖率必须 **27/27** |
+| `kb_search.py` | `python scripts/kb_search.py 线索…` |
