@@ -10,7 +10,7 @@
 | 星座、南十字、北极星、恒星、认星、星象、南半球、北半球 | [night-sky/](night-sky/SKILL.md) | 12 |
 | 云、积云、层云、卷云、乌云、云层、云朵、雨 | [weather-climate/](weather-climate/SKILL.md) | 84 |
 | 云型识别、看云识天、荚状云、积雨云、晕、幻日、彩虹、霞、雾 | [cloud-reading/](cloud-reading/SKILL.md) | 78 |
-| 树、树种、行道树、乔木、植物、植被、棕榈、椰、农作物、家畜、牦牛、野生动物、鸟、物种识别 | [bio-clues/](bio-clues/SKILL.md) | — |
+| 树、树种、行道树、乔木、植物、植被、棕榈、椰、农作物、家畜、牦牛、野生动物、鸟、物种识别 | [bio-clues/](bio-clues/SKILL.md) | 35 |
 | 屋顶、平顶、斜面、坡屋顶、瓦、琉璃、尖顶、庑殿 | [architecture/](architecture/SKILL.md) | 129 |
 | 动车组、crh、复兴号、和谐号、机车、绿皮、车头、货车 | [railways/](railways/SKILL.md) | 351 |
 | 地铁、屏蔽门、站台门、站厅、闸机、线路图、标志色、换乘 | [metro/](metro/SKILL.md) | 97 |
