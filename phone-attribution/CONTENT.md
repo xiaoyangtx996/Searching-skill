@@ -223,7 +223,7 @@ curl -s "https://www.chahaoba.com/api.php?action=parse&pageid=<id>&prop=wikitext
 | `geo-sleuth/data/cn_area_codes.json` | 座机之前 | 离线区号→城市，零请求 |
 | `geo-sleuth/scripts/clues.py` | 同上 | `python geo-sleuth/scripts/clues.py lookup area-code 023` |
 | `region/references/elements/电话区号.md` | 区号对照 | 区号 → 大区/城市 |
-| `language-script/SKILL.md` | 交叉 | 号码位数、虚拟号段判读 |
+| `language-script/CONTENT.md` | 交叉 | 号码位数、虚拟号段判读 |
 
 ---
 

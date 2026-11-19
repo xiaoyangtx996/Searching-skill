@@ -156,7 +156,7 @@ openssl enc -d -aes-256-cbc -a -in cipher.txt -k "<密钥>" -out plain.txt
 | https://www.cmd5.com/ | 32/16 位 Hex | 反查哈希 |
 | https://330k.github.io/misc_tools/unicode_steganography.html | 长度异常 | 零宽解密 |
 | https://www.keyfc.net/bbs/tools/tudoucode.aspx | 佛曰 | 专用解码 |
-| `language-script/SKILL.md` | 出可读明文后 | **必回灌** |
+| `language-script/CONTENT.md` | 出可读明文后 | **必回灌** |
 | `docs/技能互联·产出手册.md` | 产出交接 | 明文去向 |
 
 <sub>规则表 + 命令级解密链路；本领域不报 L3+。</sub>

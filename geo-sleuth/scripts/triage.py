@@ -38,7 +38,7 @@ def _is_root(d: Path) -> bool:
     if (d / "region").exists():
         return True
     try:
-        subs = [p for p in d.iterdir() if p.is_dir() and (p / "SKILL.md").exists()]
+        subs = [p for p in d.iterdir() if p.is_dir() and ((p / "CONTENT.md").exists() or (p / "SKILL.md").exists())]
     except Exception:
         return False
     return len(subs) >= 2

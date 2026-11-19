@@ -35,7 +35,7 @@ if not (ROOT / "region").exists():
     ROOT = Path(__file__).resolve().parents[2]
 
 LAYERS = {
-    "element":   {"desc": "元素领域（27 技能 SKILL.md）",       "glob": "*/SKILL.md"},
+    "element":   {"desc": "元素领域（27 技能 CONTENT.md）",     "glob": "*/CONTENT.md"},
     "region_cn": {"desc": "区域层·中国（省市教程）",            "glob": "region/references/china/*.md"},
     "region_w":  {"desc": "区域层·世界",                        "glob": "region/references/world/*.md"},
     "region_e":  {"desc": "区域层·元素（通用对照）",            "glob": "region/references/elements/*.md"},

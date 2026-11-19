@@ -1,6 +1,6 @@
 # Chronolocation：用太阳与阴影定位（Bellingcat 方法）
 
-> **旁挂**：`SKILL.md` 是「线索 → 结论」规则表；本文是从 OSINT 侧导入的**系统方法**，补足「怎么把太阳/阴影变成机位」。
+> **旁挂**：`CONTENT.md` 是「线索 → 结论」规则表；本文是从 OSINT 侧导入的**系统方法**，补足「怎么把太阳/阴影变成机位」。
 > 素材来源：Bellingcat《Using the Sun and the Shadows for Geolocation》(2020-12-03) 中译本（本地 `SunCalc.org-光影定位/`）。
 > 本地等价计算脚本：`geo-sleuth/scripts/sun.py`（与 NREL SPA 对比误差 ≤0.02°）；交互工具：SunCalc。
 

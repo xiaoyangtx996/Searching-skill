@@ -4,7 +4,7 @@
 
 # Searching-skill · 网络迷踪判读规则库
 
-给 AI 助手用的**看图定位**知识库：从照片可见线索推断「这是什么」「这里是哪」，再用 [`geo-sleuth`](geo-sleuth/SKILL.md) 做数值核验。
+给 AI 助手用的**看图定位**知识库：从照片可见线索推断「这是什么」「这里是哪」，再用 [`geo-sleuth`](geo-sleuth/CONTENT.md) 做数值核验。
 
 | 层 | 回答 | 组织 | 规模 |
 |---|---|---|---|
@@ -56,9 +56,9 @@ cp -r Searching-skill <你的技能目录>/Searching-skill
 | 技能名 | 内容 |
 |---|---|
 | [`wlmz`](SKILL.md) | 总技能：读图 → 提线索 → 路由 |
-| [`wlmz-region`](region/SKILL.md) | **区域定位**：按国家/省份比对 |
+| [`wlmz-region`](region/CONTENT.md) | **区域定位**：按国家/省份比对 |
 | `wlmz-yun` / `wlmz-shengwu` / … | 云识读、生物线索等元素领域（见 [`INDEX.md`](INDEX.md)） |
-| [`geo-sleuth`](geo-sleuth/SKILL.md) | **核验层**：太阳影子、OSM、反解机位、证据图 |
+| [`geo-sleuth`](geo-sleuth/CONTENT.md) | **核验层**：太阳影子、OSM、反解机位、证据图 |
 
 ```bash
 # 可选：本地一键分流（EXIF → OCR → 识图 → 技能遍历）
@@ -73,7 +73,7 @@ py geo-sleuth/scripts/triage.py 图.jpg
   <img src="./assets/readme/workflow.svg" width="100%" alt="流程：读 EXIF → 列可见线索 → 加载领域/区域 → geo-sleuth 核验 → 输出 L0–L4">
 </p>
 
-助手会先查 EXIF，再提取线索，按 [`INDEX.md`](INDEX.md) 加载相关领域判读「这是什么」；需要定地点时再加载 [`wlmz-region`](region/SKILL.md)；数值核验走 [`geo-sleuth`](geo-sleuth/SKILL.md)。置信度与证据写法见 [`docs/证据与置信度框架.md`](docs/证据与置信度框架.md)，技能之间如何交接见 [`docs/技能互联·产出手册.md`](docs/技能互联·产出手册.md)。
+助手会先查 EXIF，再提取线索，按 [`INDEX.md`](INDEX.md) 加载相关领域判读「这是什么」；需要定地点时再加载 [`wlmz-region`](region/CONTENT.md)；数值核验走 [`geo-sleuth`](geo-sleuth/CONTENT.md)。置信度与证据写法见 [`docs/证据与置信度框架.md`](docs/证据与置信度框架.md)，技能之间如何交接见 [`docs/技能互联·产出手册.md`](docs/技能互联·产出手册.md)。
 
 ---
 

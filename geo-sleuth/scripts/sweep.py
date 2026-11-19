@@ -30,11 +30,14 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
-# 向上找仓库根：优先认「区域定位」，其次认「有≥2个含 SKILL.md 的子目录」的那一级
+# 向上找仓库根：优先认「区域定位」，其次认「有≥2个含 CONTENT.md/SKILL.md 的子目录」的那一级
+def _module_file(p: Path) -> bool:
+    return (p / "CONTENT.md").exists() or (p / "SKILL.md").exists()
+
 def _is_root(d: Path) -> bool:
     if (d / "region").exists():
         return True
-    subs = [p for p in d.iterdir() if p.is_dir() and (p / "SKILL.md").exists()] if d.is_dir() else []
+    subs = [p for p in d.iterdir() if p.is_dir() and _module_file(p)] if d.is_dir() else []
     return len(subs) >= 2
 
 for _ in range(6):
@@ -86,12 +89,12 @@ SYNONYMS: dict[str, list[str]] = {
 
 
 def discover_skills() -> list[Path]:
-    """所有含 SKILL.md 的顶层技能目录（不含仓库根）"""
+    """所有含 CONTENT.md（或旧 SKILL.md）的顶层领域目录（不含仓库根）"""
     out = []
     for p in sorted(ROOT.iterdir()):
         if not p.is_dir() or p.name in SKIP_PARTS:
             continue
-        if (p / "SKILL.md").exists():
+        if _module_file(p):
             out.append(p)
     return out
 

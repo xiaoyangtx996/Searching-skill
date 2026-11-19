@@ -1,6 +1,6 @@
 ---
 name: wlmz
-description: "Use when 看图定位/网络迷踪/图寻/图片找地点/geolocation from photo. List visible clues only; load wlmz-* domain SKILL.md and/or wlmz-region. Triggers: 这是哪里, 照片定位, 区猜."
+description: "Searching-skill / 武林秘籍单入口路由。Use when 看图定位/网络迷踪/图寻/图片找地点/geolocation from photo. List visible clues only; load wlmz-* domain CONTENT.md and/or wlmz-region. Triggers: 这是哪里, 照片定位, 区猜."
 version: 2.3.0
 metadata:
   hermes:
@@ -51,7 +51,7 @@ metadata:
 | L3 城市/区县 | 城市 高（文字/车牌/区号/确认锚点）或 **片区 中** | ≥2 线索 + ≥1 条已抄规则 |
 | L4 点位/路名 | **路 高**（实景 ≥2 独有特征）或 **楼 高**（两条独立约束 + 实景 ≥3 项）；有 GPS 直接 L4 | 可核验文本或两条独立约束交会 + 误差半径 |
 
-- 误差半径 ≤100 m 的机位才有资格进 L4（`geo-sleuth/SKILL.md` 硬规则 2）。
+- 误差半径 ≤100 m 的机位才有资格进 L4（`geo-sleuth/CONTENT.md` 硬规则 2）。
 - `geo-sleuth` 报「路 高 + 方位自检通过」（无地面照片时）也整体进 L4，但**楼级置信度最高只给中**。
 - 楼层级（geo-sleuth 有该档）**不进 L0–L4**：L4 到点位为止，楼层作为附注信息。
 
@@ -145,7 +145,7 @@ print(im.getexif().get_ifd(0x8825))
 > 🔁 全库搜索（防漏层 v1，仍要跑）：`py geo-sleuth/scripts/kb_search.py <线索词…>`
 > 一次搜遍**元素层 + 区域层 + geo-sleuth** 并按层报命中数。
 
-加载具体技能用：`目录/SKILL.md` 或 `wlmz-*` 或 Hermes `skill_view`。
+加载具体技能用：`目录/CONTENT.md`（经本入口路由；子目录勿再当独立 skill） 或 `wlmz-*` 或 Hermes `skill_view`。
 
 | 线索 | 技能 |
 |---|---|
@@ -179,7 +179,7 @@ print(im.getexif().get_ifd(0x8825))
 
 | 触发 | 一线修复 | 仍失败兜底 |
 |---|---|---|
-| 读不到技能 | 改相对路径`目录/SKILL.md` | 仅本流程+可见文字，封顶L1 |
+| 读不到技能 | 改相对路径`目录/CONTENT.md` | 仅本流程+可见文字，封顶L1 |
 | 无规则命中 | 换领域或`methodology` | 摘要写「无命中」；封顶L1 |
 | 季节/半球冲突 | 跳过该条 | 只留条件相符规则 |
 
@@ -278,15 +278,15 @@ kb_search: <各层命中数，如 元素63/区域120/geosleuth31；或"未跑">
 | 路径 | 何时用 | 怎么用 |
 |---|---|---|
 | `INDEX.md` | 不知进哪个领域 | 按关键词行定位目录名 |
-| `*/SKILL.md` | 步骤3 | 匹配「线索→结论」左侧 |
+| `*/CONTENT.md` | 步骤3 | 匹配「线索→结论」左侧 |
 | `geo-sleuth/scripts/sweep.py` | **步骤3（强制）** | `py …/sweep.py <线索…>` → 全 27 技能遍历，覆盖率必须 27/27 |
 | `geo-sleuth/scripts/kb_search.py` | 步骤3/4（强制） | `py …/kb_search.py <线索…>` → 按层报命中数 |
 | `docs/技能互联·产出手册.md` | 步骤6 | 出口表：每个技能产出交给谁；7 孤岛出口 |
-| `region/SKILL.md`+`references/` | 步骤4 | 先`_index.md`再单文件 |
-| `geo-sleuth/SKILL.md` | 需要数值核验/查表/证据图（步骤3已路由） | 先读其「与 wlmz 的分工」；命令按 Hermes 说明改写 |
+| `region/CONTENT.md`+`references/` | 步骤4 | 先`_index.md`再单文件 |
+| `geo-sleuth/CONTENT.md` | 需要数值核验/查表/证据图（步骤3已路由） | 先读其「与 wlmz 的分工」；命令按 Hermes 说明改写 |
 | `image-search-mcp/` | 需要自动识图（Google Lens） | 见其 `README.md`；未注册 MCP 时用 `node test-engines.mjs <图> <引擎>` |
 | `lighting-astronomy/references/影子与太阳·本地计算.md` | 有影子/太阳要算数值 | 影长比↔高度角、规则→`sun.py` 映射、ShadowFinder 用法 |
 | `lighting-astronomy/ShadowFinder-main/` | 需要「全球亮带图」验证 | `py -c` 调 `ShadowFinder`；或直接用其 Colab |
-| `spatiotemporal-culture/SKILL.md` + `spatiotemporal-culture/references/全球时空日历.md` | 有人群聚集/节庆/特色穿戴/要推时间 | 先读方法论，再查对应月份日历 |
-| `phone-attribution/SKILL.md` | 招牌/门头/广告牌上有固话号码 | chahaoba.com `api.php` 查询法（用本地号码段）+ 护栏 |
+| `spatiotemporal-culture/CONTENT.md` + `spatiotemporal-culture/references/全球时空日历.md` | 有人群聚集/节庆/特色穿戴/要推时间 | 先读方法论，再查对应月份日历 |
+| `phone-attribution/CONTENT.md` | 招牌/门头/广告牌上有固话号码 | chahaoba.com `api.php` 查询法（用本地号码段）+ 护栏 |
 | `railways/references/铁路时刻与车站坐标.md` | 有站名牌/车次号/车型 | 车站坐标表（本地）+ 12306 经停站 + rail.re |
